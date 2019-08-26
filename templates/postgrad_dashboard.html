@@ -1,17 +1,11 @@
-<!-- templates/home.html -->
 {% extends 'base.html' %}
 
-{% block title %}Postgrad Dashboard{% endblock %}
+{% block title %}
+    Postgrad Dashboard
+{% endblock %}
 
 {% block content %}
-{% if user.is_authenticated %}
-    <p>Hi {{ fname }} {{ lname }}!</p>
-    <p>Username: {{ user.username}}</p>
-    <p>Student number: {{ user.postgrad_profile.student_number }}</p>
-    <p><a href="{% url 'home' %}">home</a> | <p><a href="{% url 'postgrad_applications_dashboard' %}">applications</a> | <a href="{% url 'logout' %}">logout</a></p>
-{% else %}
-    <p>You are not logged in</p>
-    <a href="{% url 'login' %}">login</a> |
-    <a href="{% url 'signup' %}">signup</a>
-{% endif %}
+    <h1>Postgrad Dashboard</h1>
+    <h2>{{ fname }} {{ lname }} ({{ user.postgrad_profile.student_number }})</h2>
+    <p><a href="{% url 'postgrad_applications_dashboard' %}">Applications</a> | <a href="{% url 'logout' %}">Logout</a></p>
 {% endblock %}

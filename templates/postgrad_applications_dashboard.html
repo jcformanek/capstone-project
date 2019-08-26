@@ -1,16 +1,10 @@
 {% extends 'base.html' %}
 
-{% block title %}Applications{% endblock %}
+{% block title %}Postgrad Applications Dashboard{% endblock %}
 
 {% block content %}
-{% if user.is_authenticated %}
-    {% for appl in applications %}
-        <p>Applicaion for {{ appl.degree }} | Status: {{ appl.status}} | <a href="{% url 'postgrad_remove_application' appl.id %}">remove</a></p>
+    {% for app in applications %}
+        <p>{{app}} | <a href="{% url 'postgrad_remove_application' app.id %}">Delete</a></p>
     {% endfor %}
-    <p><a href="{% url 'postgrad_dashboard' %}">back</a> | <a href="{% url 'new_application' %}">new application</a></p>
-{% else %}
-    <p>You are not logged in</p>
-    <a href="{% url 'login' %}">login</a> |
-    <a href="{% url 'signup' %}">signup</a>
-{% endif %}
+    <p><a href="{% url 'postgrad_dashboard' %}">Back</a> | <a href="{% url 'new_application' %}">New Application</a></p>
 {% endblock %}

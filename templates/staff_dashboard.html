@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Staff Dashboard
+{% endblock %}
+
+{% block content %}
+    <h1>Staff Dashboard</h1>
+    <h2>{{ fname }} {{ lname }} ({{ user.staff_profile.staff_number }})</h2>
+    <p><a href="{% url 'staff_applications_dashboard' %}">Applications</a> | <a href="{% url 'logout' %}">Logout</a></p>
+{% endblock %}

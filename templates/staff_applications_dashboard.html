@@ -3,13 +3,8 @@
 {% block title %}Applications{% endblock %}
 
 {% block content %}
-{% if user.is_authenticated and user.is_staff %}
     {% for appl in applications %}
-        <p>Application: {{ appl.postgrad_profile.student_number }} for {{ appl.degree }} | Status: {{ appl.status}} | {% if appl.is_accepted == False %}<a href="{% url 'accept_application' appl.id %}">accept</a> {% endif %} {% if appl.is_rejected == False %} <a href="{% url 'reject_application' appl.id %}">reject</a></p> {% endif %} <a href="{% url 'remove_application' appl.id %}">remove</a></p>
+        <p><a href="{% url 'staff_application_detailed' appl.id %}">Application:</a> {{ appl.postgrad_profile.student_number }} for {{ appl.degree }} | Status: {{ appl.status}}
     {% endfor %}
-    <p><a href="{% url 'home' %}">home</a></p>
-{% else %}
-    <p>You are not logged in</p>
-    <a href="{% url 'login' %}">login</a>
-{% endif %}
+    <p><a href="{% url 'staff_dashboard' %}">Back</a></p>
 {% endblock %}

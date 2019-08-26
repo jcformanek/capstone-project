@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Homepage{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated and user.is_postgrad%}
+    <h1>CS Online Applications Postgrad Portal</h1>
+    <p>Hi {{ user.postgrad_profile.first_name }} {{ user.postgrad_profile.last_name }}! (not you? <a href="{% url 'logout' %}">logout</a>)</p>
+    <p><a href="{% url 'postgrad_dashboard' %}">My Profile</a></p>
+{% elif user.is_authenticated and user.is_staff%}
+    <h1>CS Online Applications Staff Portal</h1>
+    <p>Hi {{ user.staff_profile.first_name }} {{ user.staff_profile.last_name }}! (not you? <a href="{% url 'logout' %}">logout</a>)</p>
+    <p><a href="{% url 'staff_dashboard' %}">Dashboard</a></p>
+{% else %}
+    <h1>CS Online Applications</h1>
+    <p>You are not logged in!</p>
+    <p><a href="{% url 'login' %}">Login</a> | <a href="{% url 'register' %}">Register</a></p>
+{% endif %}
+{% endblock %}

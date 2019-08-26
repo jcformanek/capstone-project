@@ -1,6 +1,6 @@
 from django.forms import forms, ModelChoiceField
-from applications.models import Degree
+from applications.models import UCTDegree
 
 
 class NewApplicationForm(forms.Form):
-    degree = ModelChoiceField(queryset=Degree.objects.all())
+    degree = ModelChoiceField(queryset=UCTDegree.objects.all())
