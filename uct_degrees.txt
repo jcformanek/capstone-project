@@ -1,0 +1,10 @@
+Honours in Computer Science (full-time),Algeria,Licence,Algeria,Magister,Angola,Licenciado,Angola,Doutorado,Australia,Bachelor degree,Australia,Bachelor degree (Honours),Australia,Master's degree
+Masters in Information Technology,Algeria,Magister,Angola,Doutorado,Australia,Bachelor degree (Honours),Australia,Master's degree
+Masters by Coursework and Dissertation,Algeria,Magister,Angola,Doutorado,Australia,Bachelor degree (Honours),Australia,Master's degree
+Masters by Dissertation,Algeria,Magister,Angola,Doutorado,Australia,Bachelor degree (Honours),Australia,Master's degree
+PhD in Computer Science,Algeria,Magister,Angola,Doutorado,Australia,Master's degree
+Honours in Information Systems (full-time),Algeria,Magister,Angola,Licenciado,Angola,Doutorado,Australia,Bachelor degree,Australia,Bachelor degree (Honours),Australia,Master's degree
+Honours in Management Information Systems (part-time),Algeria,Magister,Angola,Licenciado,Angola,Doutorado,Australia,Bachelor degree,Australia,Bachelor degree (Honours),Australia,Master's degree
+Postgraduate Diploma in Management in Information Systems (part-time),Algeria,Magister,Angola,Doutorado,Australia,Bachelor degree (Honours),Australia,Master's degree
+Master of Commerce in Information Systems,Algeria,Magister,Angola,Doutorado,Australia,Bachelor degree (Honours),Australia,Master's degree
+PhD in Information Systems,Algeria,Magister,Angola,Doutorado,Australia,Master's degree

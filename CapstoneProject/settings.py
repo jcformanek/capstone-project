@@ -25,10 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users.apps.UsersConfig',
     'applications.apps.ApplicationsConfig',
-    'postgrad.apps.PostgradConfig',
-    'staff.apps.StaffConfig'
 ]
 
 MIDDLEWARE = [
@@ -112,7 +109,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-AUTH_USER_MODEL = 'users.CustomUser'
+AUTH_USER_MODEL = 'applications.CustomUser'
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'

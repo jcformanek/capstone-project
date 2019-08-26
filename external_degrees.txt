@@ -1,0 +1,8 @@
+Algeria,Licence
+Algeria,Magister
+Angola,Licenciado
+Angola,Bacharel
+Angola,Doutorado
+Australia,Bachelor degree
+Australia,Bachelor degree (Honours)
+Australia,Master's degree
