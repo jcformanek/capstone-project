@@ -4,7 +4,7 @@
 
 {% block content %}
     {% for app in applications %}
-        <p>{{app}} | <a href="{% url 'postgrad_remove_application' app.id %}">Delete</a></p>
+        <p><a href="{% url 'application_update' app.id %}">{{app}}</a> | <a href="{% url 'postgrad_remove_application' app.id %}">Delete</a></p>
     {% endfor %}
     <p><a href="{% url 'postgrad_dashboard' %}">Back</a> | <a href="{% url 'new_application' %}">New Application</a></p>
 {% endblock %}

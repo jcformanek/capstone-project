@@ -10,6 +10,7 @@ urlpatterns = [
     path('postgrad/qualifications', edit_qualification_view, name='postgrad_edit_qualification'),
     path('postgrad/applications/remove/<int:id>', postgrad_remove_application_view, name='postgrad_remove_application'),
     path('postgrad/new-application', new_application_view, name='new_application'),
+    path('postgrad/application/<int:pk>/update/', ApplicationUpdate.as_view(), name='application_update'),
     path('staff', staff_dashboard_view, name='staff_dashboard'),
     path('staff/applications', staff__applications_dashboard_view, name='staff_applications_dashboard'),
     path('staff/applications/<int:id>/', staff__application_detailed_view, name='staff_application_detailed'),

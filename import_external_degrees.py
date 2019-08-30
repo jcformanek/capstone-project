@@ -9,11 +9,15 @@ from applications.models import *
 external_degrees_filename = "external_degrees.txt"
 uct_degrees_filename = "uct_degrees.txt"
 
-EXTERNAL_DEGREE_TYPES = ['Licence', 'Magister', 'Bacharel', 'Licenciado', 'Doutorado', 'Bachelor degree', 'Bachelor degree (Honours)',
+class ExternalDegreeTypes():
+    types = ['Licence', 'Magister', 'Bacharel', 'Licenciado', 'Doutorado', 'Bachelor degree', 'Bachelor degree (Honours)',
                          'Master\'s degree']
 
-COUNTRIES = ['Algeria', 'Angola', 'Australia']
+class Countries():
+    countries = ['Algeria', 'Angola', 'Australia']
 
+COUNTRIES = Countries()
+EXTERNAL_DEGREE_TYPES = ExternalDegreeTypes()
 
 def add_external_degree(country, degree_type):
     d = ExternalDegree.objects.get_or_create(country=country, type=degree_type)[0]
@@ -31,7 +35,7 @@ def populate_external_degrees():
     f = open(external_degrees_filename, 'r')
     for line in f:
         data = line.strip().split(",")
-        if data[0] in COUNTRIES and data[1] in EXTERNAL_DEGREE_TYPES:
+        if data[0] in COUNTRIES.countries and data[1] in EXTERNAL_DEGREE_TYPES.types:
             add_external_degree(data[0], data[1])
     f.close()
 

@@ -1,14 +1,20 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django import forms
-from applications.models import UCTDegree, CustomUser, ExternalDegree
+from applications.models import UCTDegree, CustomUser, ExternalDegree, Application
+from import_external_degrees import ExternalDegreeTypes, Countries
 
-EXTERNAL_DEGREE_TYPES = ['Licence', 'Magister', 'Bacharel', 'Licenciado', 'Doutorado', 'Bachelor degree', 'Bachelor degree (Honours)',
-                         'Master\'s degree']
+EXTERNAL_DEGREE_TYPES = ExternalDegreeTypes().types
+COUNTRIES = Countries().countries
 
-COUNTRIES = ['Algeria', 'Angola', 'Australia']
 
 class NewApplicationForm(forms.Form):
     degree = forms.ModelChoiceField(queryset=UCTDegree.objects.all())
+    pdf = forms.FileField()
+
+    class Meta:
+        model = Application
+        fields = ('degree', 'pdf')
+
 
 class CreateProfileForm(forms.Form):
     first_name = forms.CharField(label="First Name")
@@ -30,4 +36,13 @@ class CustomUserChangeForm(UserChangeForm):
 
 
 class QualificationForm(forms.Form):
-    external_degree = forms.ModelChoiceField(ExternalDegree.objects.all())
+    external_degree = forms.ModelChoiceField(ExternalDegree)
+
+    def __init__(self, country=None,**kwargs):
+        super(QualificationForm, self).__init__(**kwargs)
+        if country:
+            self.fields['external_degree'].queryset = ExternalDegree.objects.filter(country=country)
+
+
+class QualificationCountryForm(forms.Form):
+    country = forms.CharField(widget=forms.Select(choices=COUNTRIES))

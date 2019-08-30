@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView
+from django.views.generic import CreateView, UpdateView
 
 from .models import *
 from.forms import *
@@ -14,14 +14,37 @@ def postgrad_check(user):
 def new_postgrad_check(user):
     return not (user.is_staff and user.is_postgrad)
 
+
+def select_country_view(request):
+    if request.method == 'POST':
+        form = QualificationCountryForm(request.POST)
+        if form.is_valid():
+            return HttpResponseRedirect(reverse('edit_qualification', kwargs={"country": form.cleaned_data["country"]}))
+    else:
+        form = QualificationCountryForm()
+    return render(request, "select_country.html", {"form": form})
+
+
+def edit_qualification_view(request, country):
+    if request.method == 'POST':
+        form = QualificationForm(request.POST, country=country)
+        if form.is_valid():
+            request.user.postgrad_profile.qualification = form.cleaned_data["external_degree"]
+            request.user.postgrad_profile.save()
+            return HttpResponseRedirect(reverse('qualification_dashboard'))
+    else:
+        form = QualificationForm(country=country)
+    return render(request, "edit_qualification.html", {"form": form})
+
+
 @login_required
 @user_passes_test(postgrad_check)
 def new_application_view(request):
     if request.method == 'POST':
-        form = NewApplicationForm(request.POST)
+        form = NewApplicationForm(request.POST, request.FILES)
         if form.is_valid():
             application = Application(postgrad_profile=request.user.postgrad_profile,
-                                      degree=form.cleaned_data['degree'])
+                                      degree=form.cleaned_data['degree'], pdf=request.FILES['pdf'])
             if request.user.postgrad_profile.qualification not in form.cleaned_data['degree'].accepted_qualifications.all():
                 application.reject()
                 application.update_reason("You did not meet the minimum qualification requirements.")
@@ -30,8 +53,13 @@ def new_application_view(request):
     else:
         form = NewApplicationForm()
 
-    return render(request, 'new_application.html', {'form': form})
+    return render(request, 'applications/application_form.html', {'form': form})
 
+
+class ApplicationUpdate(UpdateView):
+    model = Application
+    fields = ['degree','pdf']
+    success_url = reverse_lazy('postgrad_applications_dashboard')
 
 @login_required
 @user_passes_test(new_postgrad_check)

@@ -40,6 +40,7 @@ class UCTDegree(models.Model):
 class Application(models.Model):
     postgrad_profile = models.ForeignKey(PostgradProfile, on_delete=models.CASCADE)
     degree = models.ForeignKey(UCTDegree, on_delete=models.CASCADE)
+    pdf = models.FileField("PDF Upload", blank=True, null=True)
     is_accepted = models.BooleanField(default=False)
     is_rejected = models.BooleanField(default=False)
     status = models.CharField(max_length=10, default="Pending")
