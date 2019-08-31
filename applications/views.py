@@ -15,35 +15,40 @@ def new_postgrad_check(user):
     return not (user.is_staff and user.is_postgrad)
 
 
-def select_country_view(request):
+def select_country_view(request, app_id):
     if request.method == 'POST':
         form = QualificationCountryForm(request.POST)
         if form.is_valid():
-            return HttpResponseRedirect(reverse('postgrad_edit_qualification', args=[form.cleaned_data["country"]]))
+            return HttpResponseRedirect(reverse('postgrad_update_qualification', args=[app_id, form.cleaned_data['country']]))
     else:
         form = QualificationCountryForm()
     return render(request, "select_country.html", {"form": form})
 
 
-def edit_qualification_view(request, country):
+def edit_qualification_view(request, app_id, country):
+    application = Application.objects.get(id=app_id)
     if request.method == 'POST':
         form = QualificationForm(request.POST)
         if form.is_valid():
             qualification = Qualification.objects.get_or_create(degree=form.cleaned_data["external_degree"], university=form.cleaned_data["university"],
                                           min_years=form.cleaned_data["min_years"], thesis=form.cleaned_data["thesis"])[0]
             qualification.save()
-            request.user.postgrad_profile.qualification = qualification
-            request.user.postgrad_profile.save()
-            return HttpResponseRedirect(reverse('postgrad_qualification_dashboard'))
+            application.qualification = qualification
+            application.save()
+            return HttpResponseRedirect(reverse('postgrad_upload_pdf', args=[app_id]))
     else:
-        if request.user.postgrad_profile.qualification:
-            form = QualificationForm({"degree": request.user.postgrad_profile.qualification.degree, "university": request.user.postgrad_profile.qualification.university,
-                                  "min_years": request.user.postgrad_profile.qualification.min_years, "thesis": request.user.postgrad_profile.qualification.thesis})
+        if application.qualification:
+            form = QualificationForm({"degree": application.qualification.degree, "university": application.qualification.university,
+                                      "min_years": application.qualification.min_years, "thesis": application.qualification.thesis})
         else:
             form = QualificationForm()
         form.fields['external_degree'] = forms.ModelChoiceField(ExternalDegree.objects.filter(country=country))
     return render(request, "postgrad_edit_qualification.html", {"form": form})
 
+
+def postgrad_application_view(request, app_id):
+    application = Application.objects.get(id=app_id)
+    return render(request, "postgrad_view_application.html", {"application": application})
 
 def postgrad_qualification_dashboard(request):
     return render(request, "postgrad_qualification_dashboard.html")
@@ -68,10 +73,72 @@ def new_application_view(request):
     return render(request, 'applications/application_form.html', {'form': form})
 
 
+def postgrad_upload_pdf_view(request, app_id):
+    application = Application.objects.get(id=app_id)
+    if request.method == 'POST' and request.FILES['pdf']:
+        file = request.FILES['pdf']
+        application.pdf = file
+        application.save()
+        return HttpResponseRedirect(reverse('postgrad_dashboard'))
+    else:
+        if application.pdf:
+            form = UploadPdfForm({"pdf": application.pdf})
+        else:
+            form = UploadPdfForm()
+    return render(request, "postgrad_pdf_upload.html", {"form": form})
+
+
+def postgrad_new_select_uct_degree_view(request):
+    if request.method == 'POST':
+        form = SelectUCTDegree(request.POST)
+        if form.is_valid():
+            app = Application.objects.get_or_create(postgrad_profile=request.user.postgrad_profile,
+                                                    degree=form.cleaned_data['degree'])[0]
+            app.save()
+            return HttpResponseRedirect(reverse('postgrad_select_country', args=[app.id]))
+    else:
+        form = SelectUCTDegree()
+    return render(request, "postgrad_select_uct_degree.html", {"form": form})
+
+
+def postgrad_edit_select_uct_degree_view(request, app_id):
+    app = Application.objects.get(id=app_id)
+    if request.method == 'POST':
+        form = SelectUCTDegree(request.POST)
+        if form.is_valid():
+            app.degree = form.cleaned_data["degree"]
+            app.save()
+            return HttpResponseRedirect(reverse('postgrad_select_country', args=[app.id]))
+    else:
+        form = SelectUCTDegree({"degree": app.degree})
+    return render(request, "postgrad_select_uct_degree.html", {"form": form})
+
+
 class ApplicationUpdate(UpdateView):
     model = Application
     fields = ['degree','pdf']
     success_url = reverse_lazy('postgrad_applications_dashboard')
+
+
+def postgrad_update_qualification(request, app_id, country):
+    application = Application.objects.get(id=app_id)
+    qualification = application.qualification
+    if request.method == 'POST':
+        form = QualificationForm(country, request.POST)
+        if form.is_valid():
+            qualification = form.save()
+            application.qualification = qualification
+            application.save()
+            return HttpResponseRedirect(reverse('postgrad_applications_dashboard'))
+    else:
+        form = QualificationForm(instance=qualification, country=country)
+    return render(request, "applications/qualification_form.html", {"form": form})
+
+
+# class QualificationUpdate(UpdateView):
+#     model = Qualification
+#     fields = ['degree', 'university', 'min_years', 'thesis']
+#     success_url = reverse_lazy('postgrad_applications_dashboard')
 
 @login_required
 @user_passes_test(new_postgrad_check)

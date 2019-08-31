@@ -26,10 +26,11 @@ class Profile(models.Model):
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
 
+
 class PostgradProfile(Profile):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='postgrad_profile')
     student_number = models.CharField(max_length=9, unique=True)
-    qualification = models.ForeignKey(Qualification, on_delete=models.CASCADE, blank=True, null=True)
+
 
 class StaffProfile(Profile):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='staff_profile')
@@ -46,6 +47,7 @@ class UCTDegree(models.Model):
 
 class Application(models.Model):
     postgrad_profile = models.ForeignKey(PostgradProfile, on_delete=models.CASCADE)
+    qualification = models.ForeignKey(Qualification, blank=True, null=True, on_delete=models.CASCADE)
     degree = models.ForeignKey(UCTDegree, on_delete=models.CASCADE)
     pdf = models.FileField("PDF Upload", blank=True, null=True)
     is_accepted = models.BooleanField(default=False)

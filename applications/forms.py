@@ -1,5 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django import forms
+from django.forms import ModelForm
+
 from applications.models import UCTDegree, CustomUser, ExternalDegree, Application, Qualification
 
 EXTERNAL_DEGREE_TYPES = ['Licence', 'Magister', 'Bacharel', 'Licenciado', 'Doutorado', 'Bachelor degree', 'Bachelor degree (Honours)',
@@ -11,13 +13,28 @@ for c in countries:
     COUNTRIES.append((c,c))
 
 
-class NewApplicationForm(forms.Form):
-    degree = forms.ModelChoiceField(queryset=UCTDegree.objects.all())
-    pdf = forms.FileField()
+class QualificationForm(ModelForm):
+    class Meta:
+        model = Qualification
+        fields = ['degree', 'university', 'min_years', 'thesis']
 
+    def __init__(self, country, *args, **kwargs):
+        super(QualificationForm, self).__init__(*args, **kwargs)
+        self.fields['degree'].queryset = ExternalDegree.objects.filter(country=country)
+
+
+class ApplicationForm(ModelForm):
     class Meta:
         model = Application
-        fields = ('degree', 'pdf')
+        fields = ['degree', 'pdf']
+
+
+class UploadPdfForm(forms.Form):
+    pdf = forms.FileField()
+
+
+class SelectUCTDegree(forms.Form):
+    degree = forms.ModelChoiceField(queryset=UCTDegree.objects.all())
 
 
 class CreateProfileForm(forms.Form):
@@ -37,17 +54,6 @@ class CustomUserChangeForm(UserChangeForm):
     class Meta(UserChangeForm):
         model = CustomUser
         fields = ('username', 'email')
-
-
-class QualificationForm(forms.Form):
-    external_degree = forms.ModelChoiceField(ExternalDegree.objects.all())
-    university = forms.CharField(max_length=100)
-    min_years = forms.IntegerField()
-    thesis = forms.BooleanField()
-
-    class Meta:
-        model = Qualification
-        fields = ("external_degree", "university", "min_years", "thesis")
 
 
 class QualificationCountryForm(forms.Form):

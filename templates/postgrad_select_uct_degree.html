@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Select UCT Degree{% endblock %}
+
+{% block content %}
+<h2>Which degree would you like to apply for?</h2>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Start Application</button>
+</form>
+{% endblock %}
