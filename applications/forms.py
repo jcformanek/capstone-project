@@ -1,10 +1,14 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django import forms
-from applications.models import UCTDegree, CustomUser, ExternalDegree, Application
-from import_external_degrees import ExternalDegreeTypes, Countries
+from applications.models import UCTDegree, CustomUser, ExternalDegree, Application, Qualification
 
-EXTERNAL_DEGREE_TYPES = ExternalDegreeTypes().types
-COUNTRIES = Countries().countries
+EXTERNAL_DEGREE_TYPES = ['Licence', 'Magister', 'Bacharel', 'Licenciado', 'Doutorado', 'Bachelor degree', 'Bachelor degree (Honours)',
+                         'Master\'s degree']
+countries = ['Algeria', 'Angola', 'Australia']
+
+COUNTRIES = []
+for c in countries:
+    COUNTRIES.append((c,c))
 
 
 class NewApplicationForm(forms.Form):
@@ -36,13 +40,15 @@ class CustomUserChangeForm(UserChangeForm):
 
 
 class QualificationForm(forms.Form):
-    external_degree = forms.ModelChoiceField(ExternalDegree)
+    external_degree = forms.ModelChoiceField(ExternalDegree.objects.all())
+    university = forms.CharField(max_length=100)
+    min_years = forms.IntegerField()
+    thesis = forms.BooleanField()
 
-    def __init__(self, country=None,**kwargs):
-        super(QualificationForm, self).__init__(**kwargs)
-        if country:
-            self.fields['external_degree'].queryset = ExternalDegree.objects.filter(country=country)
+    class Meta:
+        model = Qualification
+        fields = ("external_degree", "university", "min_years", "thesis")
 
 
 class QualificationCountryForm(forms.Form):
-    country = forms.CharField(widget=forms.Select(choices=COUNTRIES))
+    country = forms.ChoiceField(choices=COUNTRIES)

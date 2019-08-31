@@ -19,7 +19,7 @@ def select_country_view(request):
     if request.method == 'POST':
         form = QualificationCountryForm(request.POST)
         if form.is_valid():
-            return HttpResponseRedirect(reverse('edit_qualification', kwargs={"country": form.cleaned_data["country"]}))
+            return HttpResponseRedirect(reverse('postgrad_edit_qualification', args=[form.cleaned_data["country"]]))
     else:
         form = QualificationCountryForm()
     return render(request, "select_country.html", {"form": form})
@@ -27,14 +27,26 @@ def select_country_view(request):
 
 def edit_qualification_view(request, country):
     if request.method == 'POST':
-        form = QualificationForm(request.POST, country=country)
+        form = QualificationForm(request.POST)
         if form.is_valid():
-            request.user.postgrad_profile.qualification = form.cleaned_data["external_degree"]
+            qualification = Qualification.objects.get_or_create(degree=form.cleaned_data["external_degree"], university=form.cleaned_data["university"],
+                                          min_years=form.cleaned_data["min_years"], thesis=form.cleaned_data["thesis"])[0]
+            qualification.save()
+            request.user.postgrad_profile.qualification = qualification
             request.user.postgrad_profile.save()
-            return HttpResponseRedirect(reverse('qualification_dashboard'))
+            return HttpResponseRedirect(reverse('postgrad_qualification_dashboard'))
     else:
-        form = QualificationForm(country=country)
-    return render(request, "edit_qualification.html", {"form": form})
+        if request.user.postgrad_profile.qualification:
+            form = QualificationForm({"degree": request.user.postgrad_profile.qualification.degree, "university": request.user.postgrad_profile.qualification.university,
+                                  "min_years": request.user.postgrad_profile.qualification.min_years, "thesis": request.user.postgrad_profile.qualification.thesis})
+        else:
+            form = QualificationForm()
+        form.fields['external_degree'] = forms.ModelChoiceField(ExternalDegree.objects.filter(country=country))
+    return render(request, "postgrad_edit_qualification.html", {"form": form})
+
+
+def postgrad_qualification_dashboard(request):
+    return render(request, "postgrad_qualification_dashboard.html")
 
 
 @login_required
@@ -133,21 +145,6 @@ def staff_accept_application_view(request, id):
     application.accept()
     application.save()
     return HttpResponseRedirect(reverse('staff_applications_dashboard'))
-
-
-@login_required
-@user_passes_test(postgrad_check)
-def edit_qualification_view(request):
-    if request.method == 'POST':
-        form = QualificationForm(request.POST)
-        if form.is_valid():
-            request.user.postgrad_profile.qualification = form.cleaned_data["external_degree"]
-            request.user.postgrad_profile.save()
-            return HttpResponseRedirect(reverse('postgrad_dashboard'))
-    else:
-        form = QualificationForm()
-    return render(request, 'edit_qualifications.html', {'form': form})
-
 
 
 @login_required

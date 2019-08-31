@@ -15,6 +15,13 @@ class ExternalDegree(models.Model):
         return self.country + " " + self.type
 
 
+class Qualification(models.Model):
+    degree = models.ForeignKey(ExternalDegree, on_delete=models.CASCADE)
+    min_years = models.IntegerField()
+    university = models.CharField(max_length=100)
+    thesis = models.BooleanField(default=False)
+
+
 class Profile(models.Model):
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
@@ -22,7 +29,7 @@ class Profile(models.Model):
 class PostgradProfile(Profile):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='postgrad_profile')
     student_number = models.CharField(max_length=9, unique=True)
-    qualification = models.ForeignKey(ExternalDegree, on_delete=models.CASCADE, blank=True, null=True)
+    qualification = models.ForeignKey(Qualification, on_delete=models.CASCADE, blank=True, null=True)
 
 class StaffProfile(Profile):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='staff_profile')

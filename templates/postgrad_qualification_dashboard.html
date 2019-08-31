@@ -1,0 +1,15 @@
+<!-- templates/signup.html -->
+{% extends 'base.html' %}
+
+{% block title %}Qualification Dashboard{% endblock %}
+
+{% block content %}
+<h2>Qualification Dashboard</h2>
+<form method="post">
+    <p>Country: {{user.postgrad_profile.qualification.degree.country}}</p>
+    <p>University: {{user.postgrad_profile.qualification.university}}</p>
+    <p>Degree: {{user.postgrad_profile.qualification.degree.type}}</p>
+    <p>Thesis: {{user.postgrad_profile.qualification.thesis}}</p>
+    <p><a href="{% url 'postgrad_select_country' %}">Edit Qualifications</a> | <a href="{% url 'postgrad_dashboard' %}">Back</a> </p>
+</form>
+{% endblock %}
