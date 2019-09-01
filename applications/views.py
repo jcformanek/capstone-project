@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.files.storage import default_storage
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
@@ -95,7 +96,7 @@ def postgrad_new_select_uct_degree_view(request):
             app = Application.objects.get_or_create(postgrad_profile=request.user.postgrad_profile,
                                                     degree=form.cleaned_data['degree'])[0]
             app.save()
-            return HttpResponseRedirect(reverse('postgrad_select_country', args=[app.id]))
+            return HttpResponseRedirect(reverse('postgrad_update_application', args=[app.id]))
     else:
         form = SelectUCTDegree()
     return render(request, "postgrad_select_uct_degree.html", {"form": form})
@@ -116,8 +117,46 @@ def postgrad_edit_select_uct_degree_view(request, app_id):
 
 class ApplicationUpdate(UpdateView):
     model = Application
-    fields = ['degree','pdf']
+    fields = ['degree', 'pdf']
     success_url = reverse_lazy('postgrad_applications_dashboard')
+
+
+def postgrad_new_application_part1(request):
+    if request.method == "POST":
+        form = NewApplicationForm(request.POST)
+        if form.is_valid():
+            country = form.cleaned_data["country"]
+            degree = form.cleaned_data["degree"]
+            return HttpResponseRedirect(reverse('postgrad_new_application_part2', args=[degree.id, country]))
+    else:
+        form = NewApplicationForm()
+    return render(request, "new_application_part1.html", {"form": form})
+
+
+def postgrad_new_application_part2(request, degree_id, country):
+    degree = UCTDegree.objects.get(id=degree_id)
+    if request.method == 'POST':
+        form = QualificationForm(country, request.POST)
+        if form.is_valid():
+            application = Application(degree=degree, postgrad_profile=request.user.postgrad_profile)
+            application.qualification = form.save()
+            application.save()
+            return HttpResponseRedirect(reverse('postgrad_update_application', args=[application.id]))
+    else:
+        form = QualificationForm(country=country)
+    return render(request, "applications/qualification_form.html", {"form": form})
+
+
+def postgrad_update_application(request, app_id):
+    application = Application.objects.get(id=app_id)
+    if request.method == "POST":
+        form = ApplicationForm(request.POST, request.FILES, instance=application)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('postgrad_view_application', args=[app_id]))
+    else:
+        form = ApplicationForm(instance=application)
+    return render(request, "applications/application_form.html", {"form": form})
 
 
 def postgrad_update_qualification(request, app_id, country):
@@ -129,16 +168,10 @@ def postgrad_update_qualification(request, app_id, country):
             qualification = form.save()
             application.qualification = qualification
             application.save()
-            return HttpResponseRedirect(reverse('postgrad_applications_dashboard'))
+            return HttpResponseRedirect(reverse('postgrad_view_application', args=[app_id]))
     else:
         form = QualificationForm(instance=qualification, country=country)
     return render(request, "applications/qualification_form.html", {"form": form})
-
-
-# class QualificationUpdate(UpdateView):
-#     model = Qualification
-#     fields = ['degree', 'university', 'min_years', 'thesis']
-#     success_url = reverse_lazy('postgrad_applications_dashboard')
 
 @login_required
 @user_passes_test(new_postgrad_check)
@@ -162,14 +195,10 @@ def create_profile_view(request):
 @login_required
 @user_passes_test(postgrad_check)
 def postgrad_dashboard_view(request):
-    return render(request, 'postgrad_dashboard.html', {"fname": request.user.postgrad_profile.first_name,
-                                                       "lname": request.user.postgrad_profile.last_name})
-
-@login_required
-@user_passes_test(postgrad_check)
-def postgrad_applications_dashboard_view(request):
     applications = Application.objects.filter(postgrad_profile=request.user.postgrad_profile)
-    return render(request, 'postgrad_applications_dashboard.html', {'applications': applications})
+    return render(request, 'postgrad_dashboard.html', {"fname": request.user.postgrad_profile.first_name,
+                                                       "lname": request.user.postgrad_profile.last_name,
+                                                       "applications": applications})
 
 
 @login_required
@@ -177,7 +206,7 @@ def postgrad_applications_dashboard_view(request):
 def postgrad_remove_application_view(request, id):
     application = Application.objects.filter(id=id)
     application.delete()
-    return HttpResponseRedirect(reverse('postgrad_applications_dashboard'))
+    return HttpResponseRedirect(reverse('postgrad_dashboard'))
 
 def staff_check(user):
     return user.is_staff

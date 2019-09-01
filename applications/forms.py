@@ -23,6 +23,11 @@ class QualificationForm(ModelForm):
         self.fields['degree'].queryset = ExternalDegree.objects.filter(country=country)
 
 
+class NewApplicationForm(forms.Form):
+    degree = forms.ModelChoiceField(queryset=UCTDegree.objects.all())
+    country = forms.ChoiceField(choices=COUNTRIES)
+
+
 class ApplicationForm(ModelForm):
     class Meta:
         model = Application

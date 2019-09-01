@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}New Application{% endblock %}
+
+{% block content %}
+<h1>New Application</h1>
+<form method="post">
+  {% csrf_token %}
+    <h2>What degree are you applying for?</h2>
+  {{ form.degree }}
+    <h2>What country did you complete your last degree in?</h2>
+    {{ form.country }}
+    <br>
+  <button type="submit">Next</button>
+</form>
+{% endblock %}

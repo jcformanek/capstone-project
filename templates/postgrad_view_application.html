@@ -16,5 +16,5 @@
     <p>Minimum years of previous degree: {{ application.qualification.min_years }} | <a href="{% url 'postgrad_update_qualification' application.id application.qualification.degree.country %}">Edit</a></p>
     <p>Did you complete a thesis in previous degree: {{ application.qualification.thesis }} <a href="{% url 'postgrad_update_qualification' application.id application.qualification.degree.country %}">Edit</a></p>
     <br>
-    <p><a href="{% url 'postgrad_remove_application' application.id %}">Withdraw Application</a> | <a href="{% url 'postgrad_applications_dashboard' %}">Back</a></p>
+    <p><a href="{% url 'postgrad_remove_application' application.id %}">Withdraw Application</a> | <a href="{% url 'postgrad_dashboard' %}">Back</a></p>
 {% endblock %}

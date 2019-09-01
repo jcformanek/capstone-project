@@ -12,7 +12,7 @@ class ExternalDegree(models.Model):
     country = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.country + " " + self.type
+        return "("+self.country+")" + " " + self.type
 
 
 class Qualification(models.Model):
@@ -49,14 +49,14 @@ class Application(models.Model):
     postgrad_profile = models.ForeignKey(PostgradProfile, on_delete=models.CASCADE)
     qualification = models.ForeignKey(Qualification, blank=True, null=True, on_delete=models.CASCADE)
     degree = models.ForeignKey(UCTDegree, on_delete=models.CASCADE)
-    pdf = models.FileField("PDF Upload", blank=True, null=True)
+    pdf = models.FileField(upload_to='documents/', blank=True, null=True)
     is_accepted = models.BooleanField(default=False)
     is_rejected = models.BooleanField(default=False)
     status = models.CharField(max_length=10, default="Pending")
     reason = models.CharField(max_length=500, blank=True)
 
     def __str__(self):
-        return self.degree.name + " | " + self.status + " | Comment: " + self.reason
+        return self.degree.name
 
     def update_status(self):
         if self.is_rejected and not self.is_accepted:
