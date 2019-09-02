@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Select Degree{% endblock %}
+
+{% block content %}
+<h2>Which degree would you like to filter by?</h2>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Filter</button>
+</form>
+{% endblock %}

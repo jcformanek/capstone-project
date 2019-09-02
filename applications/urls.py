@@ -19,8 +19,10 @@ urlpatterns = [
     # path('postgrad/new-application', new_application_view, name='new_application'),
     path('postgrad/application/view/<int:app_id>', postgrad_application_view, name='postgrad_view_application'),
     path('staff', staff_dashboard_view, name='staff_dashboard'),
-    path('staff/applications', staff__applications_dashboard_view, name='staff_applications_dashboard'),
-    path('staff/applications/<int:id>/', staff__application_detailed_view, name='staff_application_detailed'),
+    path('staff/applications/filter-by-degree/', staff_select_uct_degree_filter_view, name='staff_select_uct_degree_filter'),
+    path('staff/applications/filter-by-degree/<int:degree_id>', staff_filter_by_degree_view, name='staff_filter_by_degree'),
+    path('staff/application/<int:app_id>/', staff_view_application, name='staff_view_application'),
     path('staff/applications/accept/<int:id>/', staff_accept_application_view, name='staff_accept_application'),
-    path('staff/applications/reject/<int:id>/', staff_reject_application_view, name='staff_reject_application')
+    path('staff/applications/reject/<int:id>/', staff_reject_application_view, name='staff_reject_application'),
+    path('staff/application/as_pdf/<int:id>/', staff_application_as_pdf, name='staff_application_as_pdf')
 ]

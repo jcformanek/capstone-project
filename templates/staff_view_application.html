@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Application Detailed{% endblock %}
+
+{% block content %}
+    <h1>Application Overview</h1>
+    <p>Application ID: {{ application.id}}</p>
+    <p>Application status: {{ application.status }}</p>
+    <p>Degree: {{ application.degree }}</p>
+    <p>PDF: {% if application.pdf %}<a href="{{ application.pdf.url }}">view</a>{% else %}None{% endif %}</p>
+    <br>
+    <h2>Your Qualification</h2>
+    <p>Previous degree: {{ application.qualification.degree.type }}</p>
+    <p>Country of previous degree: {{ application.qualification.degree.country }}</p>
+    <p>Minimum years of previous degree: {{ application.qualification.min_years }}</p>
+    <p>Did you complete a thesis in previous degree: {{ application.qualification.thesis }}</p>
+    <br>
+    <p>{% if not application.is_accepted %}<a href="{% url 'staff_accept_application' application.id%}">Accept</a>{% endif %}
+    {% if not application.is_rejected%}<a href="{% url 'staff_reject_application' application.id%}">Reject</a>{% endif %}</p>
+    <p><a href="{% url 'staff_application_as_pdf' application.id %}">Download as PDF</a> | <a href="{% url 'staff_dashboard' %}">Back</a></p>
+{% endblock %}

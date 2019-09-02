@@ -4,9 +4,21 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, UpdateView
+import io
+from django.http import FileResponse
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.pdfgen import canvas
+from reportlab.platypus import Paragraph, SimpleDocTemplate
 
 from .models import *
 from.forms import *
+
+
+class RegisterView(CreateView):
+    form_class = CustomUserCreationForm
+    success_url = reverse_lazy('create_profile')
+    template_name = 'register.html'
+
 
 def postgrad_check(user):
     return user.is_postgrad
@@ -215,22 +227,17 @@ def staff_check(user):
 @login_required
 @user_passes_test(staff_check)
 def staff_dashboard_view(request):
-    return render(request, 'staff_dashboard.html', {"fname": request.user.staff_profile.first_name,
-                                                       "lname": request.user.staff_profile.last_name})
-
-
-@login_required
-@user_passes_test(staff_check)
-def staff__applications_dashboard_view(request):
     applications = Application.objects.all()
-    return render(request, 'staff_applications_dashboard.html', {'applications': applications})
+    return render(request, 'staff_dashboard.html', {"fname": request.user.staff_profile.first_name,
+                                                    "lname": request.user.staff_profile.last_name,
+                                                    'applications': applications})
 
 
 @login_required
 @user_passes_test(staff_check)
-def staff__application_detailed_view(request, id):
-    application = Application.objects.get(id=id)
-    return render(request, 'staff_application_detailed.html', {'application': application})
+def staff_view_application(request, app_id):
+    application = Application.objects.get(id=app_id)
+    return render(request, 'staff_view_application.html', {'application': application})
 
 
 @login_required
@@ -240,7 +247,7 @@ def staff_accept_application_view(request, id):
     application = Application.objects.get(id=application_id)
     application.accept()
     application.save()
-    return HttpResponseRedirect(reverse('staff_applications_dashboard'))
+    return HttpResponseRedirect(reverse('staff_view_application', args=[id]))
 
 
 @login_required
@@ -250,9 +257,46 @@ def staff_reject_application_view(request, id):
     application = Application.objects.get(id=application_id)
     application.reject()
     application.save()
-    return HttpResponseRedirect(reverse('staff_applications_dashboard'))
+    return HttpResponseRedirect(reverse('staff_view_application', args=[id]))
 
-class RegisterView(CreateView):
-    form_class = CustomUserCreationForm
-    success_url = reverse_lazy('create_profile')
-    template_name = 'register.html'
+
+def staff_select_uct_degree_filter_view(request):
+    if request.method == "POST":
+        form = SelectUCTDegree(request.POST)
+        if form.is_valid():
+            degree = form.cleaned_data["degree"]
+            return HttpResponseRedirect(reverse("staff_filter_by_degree", args=[degree.id]))
+    else:
+        form = SelectUCTDegree()
+    return render(request, "staff_select_degree.html", {"form": form})
+
+
+def staff_filter_by_degree_view(request, degree_id):
+    degree = UCTDegree.objects.get(id=degree_id)
+    applications = Application.objects.filter(degree=degree)
+    return render(request, "staff_filter_by_degree.html", {"applications": applications, "degree": degree.name})
+
+
+def staff_application_as_pdf(request, id):
+    application = Application.objects.get(id=id)
+    buffer = io.BytesIO()
+    my_doc = SimpleDocTemplate(buffer)
+    flowables = []
+    sample_style_sheet = getSampleStyleSheet()
+    paragraph_1 = Paragraph("Application", sample_style_sheet['Heading1'])
+    paragraph_2 = Paragraph("Student number: "+application.postgrad_profile.student_number,sample_style_sheet['BodyText'])
+    paragraph_3 = Paragraph("Applying for: "+application.degree.name, sample_style_sheet['BodyText'])
+    paragraph_4 = Paragraph("Previous Degree: "+str(application.qualification.degree), sample_style_sheet['BodyText'])
+    paragraph_5 = Paragraph("Minimum years of previous degree: "+str(application.qualification.min_years), sample_style_sheet['BodyText'])
+    paragraph_6 = Paragraph("Thesis complete: "+str(application.qualification.thesis), sample_style_sheet['BodyText'] )
+    flowables.append(paragraph_1)
+    flowables.append(paragraph_2)
+    flowables.append(paragraph_3)
+    flowables.append(paragraph_4)
+    flowables.append(paragraph_5)
+    flowables.append(paragraph_6)
+    my_doc.build(flowables)
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename='hello.pdf')
+
+
