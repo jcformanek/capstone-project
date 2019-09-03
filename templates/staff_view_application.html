@@ -23,7 +23,7 @@
     <h2>Applicant Details</h2>
     <p>Name: {{ application.postgrad_profile.first_name }} {{ application.postgrad_profile.first_name }}</p>
     <p>Email: {{ application.postgrad_profile.email }}</p>
-    <p>Citizenship: {{ application.postgrad_profile.email }}</p>
+    <p>Citizenship: {{ application.postgrad_profile.citizenship }}</p>
     <p>{% if application.postgrad_profile.citizenship == "International" %}
         Country: {{ application.postgrad_profile.citizenship_country }}
             {% else %}
