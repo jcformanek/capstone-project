@@ -2,7 +2,7 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django import forms
 from django.forms import ModelForm
 
-from applications.models import UCTDegree, CustomUser, ExternalDegree, Application, Qualification
+from applications.models import *
 
 EXTERNAL_DEGREE_TYPES = ['Licence', 'Magister', 'Bacharel', 'Licenciado', 'Doutorado', 'Bachelor degree', 'Bachelor degree (Honours)',
                          'Master\'s degree']
@@ -43,9 +43,8 @@ class SelectUCTDegree(forms.Form):
 
 
 class CreateProfileForm(forms.Form):
-    first_name = forms.CharField(label="First Name")
-    last_name = forms.CharField(label="Last Name")
     student_number = forms.CharField(label="Student Number", max_length=9)
+
 
 class CustomUserCreationForm(UserCreationForm):
 
@@ -63,3 +62,24 @@ class CustomUserChangeForm(UserChangeForm):
 
 class QualificationCountryForm(forms.Form):
     country = forms.ChoiceField(choices=COUNTRIES)
+
+
+class SelectCitizenshipForm(forms.Form):
+    citizenship = forms.ChoiceField(choices=[('RSA-Citizen', 'RSA-Citizen'),
+                                                            ("RSA-Permanent-Resident", "RSA-Permanent-Resident"),
+                                                            ('International', 'International')])
+
+
+class CreateInterPostgradProfileForm(ModelForm):
+    class Meta:
+        model = PostgradProfile
+        fields = ['student_number', 'first_name', 'last_name', 'email', 'current_country',
+                  'current_city', 'citizenship_country']
+
+
+class CreateRSAPostgradProfileForm(ModelForm):
+    class Meta:
+        model = PostgradProfile
+        fields = ['student_number', 'first_name', 'last_name', 'email', 'race', 'current_country','current_city']
+
+

@@ -5,7 +5,8 @@ from .views import *
 urlpatterns = [
     path('accounts/register/', RegisterView.as_view(), name='register'),
     path('postgrad', postgrad_dashboard_view, name='postgrad_dashboard'),
-    path('postgrad/create_profile', create_profile_view, name='create_profile'),
+    path('postgrad/create_profile/<str:inter>', create_profile_view, name='postgrad_create_profile'),
+    path('postgrad/select_citizenship/', postgrad_citizenship_select_view, name='postgrad_select_citizenship'),
     path('postgrad/application/update/<int:app_id>', postgrad_update_application, name='postgrad_update_application'),
     path('postgrad/application/qualification/select_country/<int:app_id>', select_country_view, name='postgrad_select_country'),
     path('postgrad/application/qualification/update/<int:app_id>/<str:country>', postgrad_update_qualification, name='postgrad_update_qualification'),
@@ -24,5 +25,6 @@ urlpatterns = [
     path('staff/application/<int:app_id>/', staff_view_application, name='staff_view_application'),
     path('staff/applications/accept/<int:id>/', staff_accept_application_view, name='staff_accept_application'),
     path('staff/applications/reject/<int:id>/', staff_reject_application_view, name='staff_reject_application'),
-    path('staff/application/as_pdf/<int:id>/', staff_application_as_pdf, name='staff_application_as_pdf')
+    path('staff/application/as_pdf/<int:id>/', staff_application_as_pdf, name='staff_application_as_pdf'),
+    path('staff/applications/as_csv/<int:id>/', staff_applications_filtered_by_degree_as_csv, name='staff_applications_filtered_by_degree_as_csv')
 ]

@@ -25,11 +25,21 @@ class Qualification(models.Model):
 class Profile(models.Model):
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
+    title = models.CharField(max_length=10)
+    email = models.CharField(max_length=100)
 
 
 class PostgradProfile(Profile):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='postgrad_profile')
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='postgrad_profile', blank=True, null=True)
     student_number = models.CharField(max_length=9, unique=True)
+    current_country = models.CharField(max_length=100)
+    current_city = models.CharField(max_length=100)
+    citizenship = models.CharField(max_length=100, choices=[("RSA-Citizen", "RSA-Citizen"),
+                                                            ("RSA-Permanent-Resident","RSA-Permanent-Resident"),
+                                                            ("International","International")])
+    race = models.CharField(max_length=100, blank=True, choices=[("Black", "Black"), ("Coloured", "Coloured"),
+                                                                 ("Indian", "Indian"), ("White", "White")])
+    citizenship_country = models.CharField(max_length=100, blank=True)
 
 
 class StaffProfile(Profile):

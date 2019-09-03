@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Select Citizenship{% endblock %}
+
+{% block content %}
+<h2>Are you a South African Citizan?</h2>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Next</button>
+</form>
+{% endblock %}

@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.files.storage import default_storage
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, UpdateView
@@ -9,15 +9,10 @@ from django.http import FileResponse
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Paragraph, SimpleDocTemplate
+import csv
 
 from .models import *
-from.forms import *
-
-
-class RegisterView(CreateView):
-    form_class = CustomUserCreationForm
-    success_url = reverse_lazy('create_profile')
-    template_name = 'register.html'
+from .forms import *
 
 
 def postgrad_check(user):
@@ -26,6 +21,45 @@ def postgrad_check(user):
 
 def new_postgrad_check(user):
     return not (user.is_staff and user.is_postgrad)
+
+
+class RegisterView(CreateView):
+    form_class = CustomUserCreationForm
+    success_url = reverse_lazy('postgrad_select_citizenship')
+    template_name = 'register.html'
+
+
+def postgrad_citizenship_select_view(request):
+    if request.method == 'POST':
+        form = SelectCitizenshipForm(request.POST)
+        if form.is_valid():
+            return HttpResponseRedirect(reverse('postgrad_create_profile', args=[form.cleaned_data["citizenship"]]))
+    else:
+        form = SelectCitizenshipForm()
+    return render(request, 'postgrad_select_citizenship.html', {'form': form})
+
+@login_required
+@user_passes_test(new_postgrad_check)
+def create_profile_view(request, inter):
+    if request.method == 'POST':
+        if inter == "International":
+            form = CreateInterPostgradProfileForm(request.POST)
+        else:
+            form = CreateRSAPostgradProfileForm(request.POST)
+        if form.is_valid():
+            profile = form.save()
+            profile.citizenship = inter
+            profile.user = request.user
+            profile.user.is_postgrad = True
+            profile.save()
+            profile.user.save()
+            return HttpResponseRedirect(reverse('postgrad_dashboard'))
+    else:
+        if inter == "International":
+            form = CreateInterPostgradProfileForm()
+        else:
+            form = CreateRSAPostgradProfileForm()
+    return render(request, 'create_profile.html', {'form': form})
 
 
 def select_country_view(request, app_id):
@@ -62,9 +96,6 @@ def edit_qualification_view(request, app_id, country):
 def postgrad_application_view(request, app_id):
     application = Application.objects.get(id=app_id)
     return render(request, "postgrad_view_application.html", {"application": application})
-
-def postgrad_qualification_dashboard(request):
-    return render(request, "postgrad_qualification_dashboard.html")
 
 
 @login_required
@@ -185,24 +216,6 @@ def postgrad_update_qualification(request, app_id, country):
         form = QualificationForm(instance=qualification, country=country)
     return render(request, "applications/qualification_form.html", {"form": form})
 
-@login_required
-@user_passes_test(new_postgrad_check)
-def create_profile_view(request):
-    if request.method == 'POST':
-        form = CreateProfileForm(request.POST)
-        if form.is_valid():
-            profile = PostgradProfile(user=request.user, student_number=form.cleaned_data['student_number'],
-                                      first_name=form.cleaned_data['first_name'],
-                                      last_name=form.cleaned_data['last_name']
-                                      )
-            profile.user.is_postgrad = True
-            profile.save()
-            profile.user.save()
-            return HttpResponseRedirect(reverse('postgrad_dashboard'))
-    else:
-        form = CreateProfileForm()
-    return render(request, 'create_profile.html', {'form': form})
-
 
 @login_required
 @user_passes_test(postgrad_check)
@@ -274,7 +287,7 @@ def staff_select_uct_degree_filter_view(request):
 def staff_filter_by_degree_view(request, degree_id):
     degree = UCTDegree.objects.get(id=degree_id)
     applications = Application.objects.filter(degree=degree)
-    return render(request, "staff_filter_by_degree.html", {"applications": applications, "degree": degree.name})
+    return render(request, "staff_filter_by_degree.html", {"applications": applications, "degree": degree})
 
 
 def staff_application_as_pdf(request, id):
@@ -298,5 +311,17 @@ def staff_application_as_pdf(request, id):
     my_doc.build(flowables)
     buffer.seek(0)
     return FileResponse(buffer, as_attachment=True, filename='hello.pdf')
+
+
+def staff_applications_filtered_by_degree_as_csv(request, id):
+    degree = UCTDegree.objects.get(id=id)
+    applications = Application.objects.filter(degree=degree)
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="applications.csv"'
+    writer = csv.writer(response)
+    writer.writerow(['Student number', 'Status'])
+    for app in applications:
+        writer.writerow([app.postgrad_profile.student_number, app.status])
+    return response
 
 
