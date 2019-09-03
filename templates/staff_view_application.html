@@ -4,18 +4,36 @@
 
 {% block content %}
     <h1>Application Overview</h1>
+    <p><a href="{% url 'staff_application_as_pdf' application.id %}">Download as PDF</a> |
+        {% if not application.locked %}
+            <a href="{% url 'staff_lock' application.id%}">Lock</a>{% endif %}
+        {% if application.locked%}
+            <a href="{% url 'staff_unlock' application.id%}">Unlock</a>{% endif %}</p>
     <p>Application ID: {{ application.id}}</p>
-    <p>Application status: {{ application.status }}</p>
+    <p>Application status: {{ application.status }} ||||
+        {% if not application.is_accepted %}
+            <a href="{% url 'staff_accept_application' application.id%}">Accept</a>{% endif %}
+        {% if not application.is_rejected%}
+            <a href="{% url 'staff_reject_application' application.id%}">Reject</a>{% endif %}
+    </p>
+    <p>Reason: "{{ application.reason}}"</p>
     <p>Degree: {{ application.degree }}</p>
     <p>PDF: {% if application.pdf %}<a href="{{ application.pdf.url }}">view</a>{% else %}None{% endif %}</p>
     <br>
-    <h2>Your Qualification</h2>
+    <h2>Applicant Details</h2>
+    <p>Name: {{ application.postgrad_profile.first_name }} {{ application.postgrad_profile.first_name }}</p>
+    <p>Email: {{ application.postgrad_profile.email }}</p>
+    <p>Citizenship: {{ application.postgrad_profile.email }}</p>
+    <p>{% if application.postgrad_profile.citizenship == "International" %}
+        Country: {{ application.postgrad_profile.citizenship_country }}
+            {% else %}
+        Race: {{ application.postgrad_profile.race }}
+    {% endif %} </p>
+    <h2>Applicant Qualification</h2>
     <p>Previous degree: {{ application.qualification.degree.type }}</p>
     <p>Country of previous degree: {{ application.qualification.degree.country }}</p>
     <p>Minimum years of previous degree: {{ application.qualification.min_years }}</p>
     <p>Did you complete a thesis in previous degree: {{ application.qualification.thesis }}</p>
     <br>
-    <p>{% if not application.is_accepted %}<a href="{% url 'staff_accept_application' application.id%}">Accept</a>{% endif %}
-    {% if not application.is_rejected%}<a href="{% url 'staff_reject_application' application.id%}">Reject</a>{% endif %}</p>
-    <p><a href="{% url 'staff_application_as_pdf' application.id %}">Download as PDF</a> | <a href="{% url 'staff_dashboard' %}">Back</a></p>
+    <p><a href="{% url 'staff_dashboard' %}">Back</a></p>
 {% endblock %}

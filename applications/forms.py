@@ -42,8 +42,14 @@ class SelectUCTDegree(forms.Form):
     degree = forms.ModelChoiceField(queryset=UCTDegree.objects.all())
 
 
-class CreateProfileForm(forms.Form):
-    student_number = forms.CharField(label="Student Number", max_length=9)
+class ReasonForm(forms.Form):
+    reason = forms.CharField(max_length=1000)
+
+
+class EditProfileForm(ModelForm):
+    class Meta():
+        model = PostgradProfile
+        fields = "__all__"
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -73,13 +79,13 @@ class SelectCitizenshipForm(forms.Form):
 class CreateInterPostgradProfileForm(ModelForm):
     class Meta:
         model = PostgradProfile
-        fields = ['student_number', 'first_name', 'last_name', 'email', 'current_country',
+        fields = ['student_number', 'title', 'first_name', 'last_name', 'email', 'current_country',
                   'current_city', 'citizenship_country']
 
 
 class CreateRSAPostgradProfileForm(ModelForm):
     class Meta:
         model = PostgradProfile
-        fields = ['student_number', 'first_name', 'last_name', 'email', 'race', 'current_country','current_city']
+        fields = ['student_number', 'title', 'first_name', 'last_name', 'email', 'race', 'current_country','current_city']
 
 

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Staff Filter
+{% endblock %}
+
+{% block content %}
+    <h1>Applications</h1>
+    <h2>Filtered by Accepted:</h2>
+    {% for app in applications %}
+        <p>Application: {{app.degree}}, {{ app.postgrad_profile.student_number }}, {{ app.postgrad_profile.email }} | {{ app.status}} | <a href="{% url 'staff_view_application' app.id %}">View</a></p>
+    {% endfor %}
+    <p><a href="{% url 'staff_filtered_by_accepted_as_csv' %}">Download csv</a> | <a href="{% url 'staff_dashboard' %}">Back</a></p>
+{% endblock %}

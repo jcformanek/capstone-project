@@ -19,6 +19,10 @@ def postgrad_check(user):
     return user.is_postgrad
 
 
+def staff_check(user):
+    return user.is_staff
+
+
 def new_postgrad_check(user):
     return not (user.is_staff and user.is_postgrad)
 
@@ -226,15 +230,24 @@ def postgrad_dashboard_view(request):
                                                        "applications": applications})
 
 
+def postgrad_edit_details_view(request):
+    postgrad = request.user.postgrad_profile
+    if request.method == "POST":
+        form = EditProfileForm(request.POST, instance=postgrad)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("postgrad_dashboard"))
+    else:
+        form = EditProfileForm(instance=postgrad)
+    return render(request, "postgrad_edit_details.html", {"form": form})
+
+
 @login_required
 @user_passes_test(postgrad_check)
 def postgrad_remove_application_view(request, id):
     application = Application.objects.filter(id=id)
     application.delete()
     return HttpResponseRedirect(reverse('postgrad_dashboard'))
-
-def staff_check(user):
-    return user.is_staff
 
 
 @login_required
@@ -260,7 +273,21 @@ def staff_accept_application_view(request, id):
     application = Application.objects.get(id=application_id)
     application.accept()
     application.save()
-    return HttpResponseRedirect(reverse('staff_view_application', args=[id]))
+    return HttpResponseRedirect(reverse('staff_add_reason', args=[id]))
+
+
+def staff_add_reason(request, id):
+    application_id = id
+    application = Application.objects.get(id=application_id)
+    if request.method == "POST":
+        form = ReasonForm(request.POST)
+        if form.is_valid():
+            application.add_reason(form.cleaned_data["reason"])
+            application.save()
+            return HttpResponseRedirect(reverse('staff_view_application', args=[id]))
+    else:
+        form = ReasonForm()
+    return render(request, 'staff_reason.html', {"form": form})
 
 
 @login_required
@@ -270,7 +297,7 @@ def staff_reject_application_view(request, id):
     application = Application.objects.get(id=application_id)
     application.reject()
     application.save()
-    return HttpResponseRedirect(reverse('staff_view_application', args=[id]))
+    return HttpResponseRedirect(reverse('staff_add_reason', args=[id]))
 
 
 def staff_select_uct_degree_filter_view(request):
@@ -288,6 +315,16 @@ def staff_filter_by_degree_view(request, degree_id):
     degree = UCTDegree.objects.get(id=degree_id)
     applications = Application.objects.filter(degree=degree)
     return render(request, "staff_filter_by_degree.html", {"applications": applications, "degree": degree})
+
+
+def staff_filter_by_accepted_view(request):
+    applications = Application.objects.filter(is_accepted=True)
+    return render(request, "staff_filter_by_accepted.html", {"applications": applications})
+
+
+def staff_filter_by_rejected_view(request):
+    applications = Application.objects.filter(is_rejected=True)
+    return render(request, "staff_filter_by_rejected.html", {"applications": applications})
 
 
 def staff_application_as_pdf(request, id):
@@ -310,7 +347,7 @@ def staff_application_as_pdf(request, id):
     flowables.append(paragraph_6)
     my_doc.build(flowables)
     buffer.seek(0)
-    return FileResponse(buffer, as_attachment=True, filename='hello.pdf')
+    return FileResponse(buffer, as_attachment=True, filename='application.pdf')
 
 
 def staff_applications_filtered_by_degree_as_csv(request, id):
@@ -319,9 +356,47 @@ def staff_applications_filtered_by_degree_as_csv(request, id):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="applications.csv"'
     writer = csv.writer(response)
-    writer.writerow(['Student number', 'Status'])
+    writer.writerow(["degree", 'student number', 'status'])
     for app in applications:
-        writer.writerow([app.postgrad_profile.student_number, app.status])
+        writer.writerow([degree, app.postgrad_profile.student_number, app.status])
     return response
+
+
+def staff_filtered_by_accepted_as_csv(request):
+    applications = Application.objects.filter(is_accepted=True)
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="applications.csv"'
+    writer = csv.writer(response)
+    writer.writerow(["degree", 'student number', 'status'])
+    for app in applications:
+        writer.writerow([app.degree, app.postgrad_profile.student_number, app.status])
+    return response
+
+
+def staff_filtered_by_rejected_as_csv(request):
+    applications = Application.objects.filter(is_accepted=False)
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="applications.csv"'
+    writer = csv.writer(response)
+    writer.writerow(["degree", 'student number', 'status'])
+    for app in applications:
+        writer.writerow([app.degree, app.postgrad_profile.student_number, app.status])
+    return response
+
+
+def staff_lock(request, id):
+    application_id = id
+    application = Application.objects.get(id=application_id)
+    application.lock()
+    application.save()
+    return HttpResponseRedirect(reverse('staff_view_application', args=[id]))
+
+
+def staff_unlock(request, id):
+    application_id = id
+    application = Application.objects.get(id=application_id)
+    application.unlock()
+    application.save()
+    return HttpResponseRedirect(reverse('staff_view_application', args=[id]))
 
 

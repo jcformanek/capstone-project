@@ -64,6 +64,7 @@ class Application(models.Model):
     is_rejected = models.BooleanField(default=False)
     status = models.CharField(max_length=10, default="Pending")
     reason = models.CharField(max_length=500, blank=True)
+    locked = models.BooleanField(default=False)
 
     def __str__(self):
         return self.degree.name
@@ -92,3 +93,13 @@ class Application(models.Model):
     def pending(self):
         self.is_rejected, self.is_accepted = False
         self.update_status()
+
+    def add_reason(self, reason):
+        self.reason = reason
+
+    def lock(self):
+        self.locked = True
+
+    def unlock(self):
+        self.locked = False
+

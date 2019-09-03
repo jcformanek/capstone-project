@@ -11,6 +11,7 @@
     {% for app in applications %}
         <p>Application for {{ app }} | {{ app.status}} | <a href="{% url 'postgrad_view_application' app.id %}">View</a></p>
     {% endfor %}
-    <p><a href="{% url 'postgrad_new_application_part1' %}">New Application</a>
+    <p><a href="{% url 'postgrad_new_application_part1' %}">New Application</a> |
+        <a href="{% url 'postgrad_edit_profile' %}">Edit details</a></p>
     <p><a href="{% url 'logout' %}">Logout</a></p>
 {% endblock %}

@@ -9,7 +9,7 @@
     <h2>Filtered by degree:</h2>
     <h3>{{degree.name}}</h3>
     {% for app in applications %}
-        <p>Application: {{ app.postgrad_profile.student_number }}| {{ app.status}} | <a href="{% url 'staff_view_application' app.id %}">View</a></p>
+        <p>Application: {{ app.postgrad_profile.student_number }}, {{ app.postgrad_profile.email }} | {{ app.status}} | <a href="{% url 'staff_view_application' app.id %}">View</a></p>
     {% endfor %}
     <p><a href="{% url 'staff_applications_filtered_by_degree_as_csv' degree.id %}">Download csv</a> | <a href="{% url 'staff_dashboard' %}">Back</a></p>
 {% endblock %}
