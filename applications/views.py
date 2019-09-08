@@ -10,6 +10,8 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Paragraph, SimpleDocTemplate
 import csv
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.mail import send_mail
 
 from .models import *
 from .forms import *
@@ -27,12 +29,14 @@ def new_postgrad_check(user):
     return not (user.is_staff and user.is_postgrad)
 
 
-class RegisterView(CreateView):
+class RegisterView( CreateView):
     form_class = CustomUserCreationForm
     success_url = reverse_lazy('postgrad_select_citizenship')
     template_name = 'register.html'
 
 
+@login_required
+@user_passes_test(new_postgrad_check)
 def postgrad_citizenship_select_view(request):
     if request.method == 'POST':
         form = SelectCitizenshipForm(request.POST)
@@ -41,6 +45,7 @@ def postgrad_citizenship_select_view(request):
     else:
         form = SelectCitizenshipForm()
     return render(request, 'postgrad_select_citizenship.html', {'form': form})
+
 
 @login_required
 @user_passes_test(new_postgrad_check)
@@ -53,10 +58,14 @@ def create_profile_view(request, inter):
         if form.is_valid():
             profile = form.save()
             profile.citizenship = inter
+            profile.email = request.user.email
             profile.user = request.user
             profile.user.is_postgrad = True
             profile.save()
             profile.user.save()
+            send_email("You registred for the CS application portal!",
+                       "Hello, you used this email to sign up on the CS website! Thanks for signing up "+
+                       profile.first_name + " " + profile.last_name, profile.email)
             return HttpResponseRedirect(reverse('postgrad_dashboard'))
     else:
         if inter == "International":
@@ -66,6 +75,8 @@ def create_profile_view(request, inter):
     return render(request, 'create_profile.html', {'form': form})
 
 
+@login_required
+@user_passes_test(postgrad_check)
 def select_country_view(request, app_id):
     if request.method == 'POST':
         form = QualificationCountryForm(request.POST)
@@ -76,6 +87,8 @@ def select_country_view(request, app_id):
     return render(request, "select_country.html", {"form": form})
 
 
+@login_required
+@user_passes_test(postgrad_check)
 def edit_qualification_view(request, app_id, country):
     application = Application.objects.get(id=app_id)
     if request.method == 'POST':
@@ -97,6 +110,8 @@ def edit_qualification_view(request, app_id, country):
     return render(request, "postgrad_edit_qualification.html", {"form": form})
 
 
+@login_required
+@user_passes_test(postgrad_check)
 def postgrad_application_view(request, app_id):
     application = Application.objects.get(id=app_id)
     return render(request, "postgrad_view_application.html", {"application": application})
@@ -121,6 +136,8 @@ def new_application_view(request):
     return render(request, 'applications/application_form.html', {'form': form})
 
 
+@login_required
+@user_passes_test(postgrad_check)
 def postgrad_upload_pdf_view(request, app_id):
     application = Application.objects.get(id=app_id)
     if request.method == 'POST' and request.FILES['pdf']:
@@ -136,6 +153,8 @@ def postgrad_upload_pdf_view(request, app_id):
     return render(request, "postgrad_pdf_upload.html", {"form": form})
 
 
+@login_required
+@user_passes_test(postgrad_check)
 def postgrad_new_select_uct_degree_view(request):
     if request.method == 'POST':
         form = SelectUCTDegree(request.POST)
@@ -149,6 +168,8 @@ def postgrad_new_select_uct_degree_view(request):
     return render(request, "postgrad_select_uct_degree.html", {"form": form})
 
 
+@login_required
+@user_passes_test(postgrad_check)
 def postgrad_edit_select_uct_degree_view(request, app_id):
     app = Application.objects.get(id=app_id)
     if request.method == 'POST':
@@ -162,12 +183,14 @@ def postgrad_edit_select_uct_degree_view(request, app_id):
     return render(request, "postgrad_select_uct_degree.html", {"form": form})
 
 
-class ApplicationUpdate(UpdateView):
+class ApplicationUpdate(LoginRequiredMixin, UpdateView):
     model = Application
     fields = ['degree', 'pdf']
     success_url = reverse_lazy('postgrad_applications_dashboard')
 
 
+@login_required
+@user_passes_test(postgrad_check)
 def postgrad_new_application_part1(request):
     if request.method == "POST":
         form = NewApplicationForm(request.POST)
@@ -180,6 +203,8 @@ def postgrad_new_application_part1(request):
     return render(request, "new_application_part1.html", {"form": form})
 
 
+@login_required
+@user_passes_test(postgrad_check)
 def postgrad_new_application_part2(request, degree_id, country):
     degree = UCTDegree.objects.get(id=degree_id)
     if request.method == 'POST':
@@ -194,6 +219,8 @@ def postgrad_new_application_part2(request, degree_id, country):
     return render(request, "applications/qualification_form.html", {"form": form})
 
 
+@login_required
+@user_passes_test(postgrad_check)
 def postgrad_update_application(request, app_id):
     application = Application.objects.get(id=app_id)
     if request.method == "POST":
@@ -206,6 +233,8 @@ def postgrad_update_application(request, app_id):
     return render(request, "applications/application_form.html", {"form": form})
 
 
+@login_required
+@user_passes_test(postgrad_check)
 def postgrad_update_qualification(request, app_id, country):
     application = Application.objects.get(id=app_id)
     qualification = application.qualification
@@ -230,6 +259,8 @@ def postgrad_dashboard_view(request):
                                                        "applications": applications})
 
 
+@login_required
+@user_passes_test(postgrad_check)
 def postgrad_edit_details_view(request):
     postgrad = request.user.postgrad_profile
     if request.method == "POST":
@@ -277,6 +308,8 @@ def staff_accept_application_view(request, id):
     return HttpResponseRedirect(reverse('staff_add_reason', args=[id]))
 
 
+@login_required
+@user_passes_test(staff_check)
 def staff_add_reason(request, id):
     application_id = id
     application = Application.objects.get(id=application_id)
@@ -285,6 +318,8 @@ def staff_add_reason(request, id):
         if form.is_valid():
             application.add_reason(form.cleaned_data["reason"])
             application.save()
+            send_email("Application status change!", "You application status was changed to "+
+                       application.status+ "! Reason: "+application.reason, application.postgrad_profile.email)
             return HttpResponseRedirect(reverse('staff_view_application', args=[id]))
     else:
         form = ReasonForm()
@@ -400,5 +435,10 @@ def staff_unlock(request, id):
     application.unlock()
     application.save()
     return HttpResponseRedirect(reverse('staff_view_application', args=[id]))
+
+
+def send_email(subject, body, recip):
+    send_mail(subject, body, "capstoneproject1010@gmail.com",[recip], False)
+
 
 

@@ -79,13 +79,13 @@ class SelectCitizenshipForm(forms.Form):
 class CreateInterPostgradProfileForm(ModelForm):
     class Meta:
         model = PostgradProfile
-        fields = ['student_number', 'title', 'first_name', 'last_name', 'email', 'current_country',
+        fields = ['student_number', 'title', 'first_name', 'last_name', 'current_country',
                   'current_city', 'citizenship_country']
 
 
 class CreateRSAPostgradProfileForm(ModelForm):
     class Meta:
         model = PostgradProfile
-        fields = ['student_number', 'title', 'first_name', 'last_name', 'email', 'race', 'current_country','current_city']
+        fields = ['student_number', 'title', 'first_name', 'last_name', 'race', 'current_country','current_city']
 
 
