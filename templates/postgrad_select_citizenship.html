@@ -1,12 +1,21 @@
-{% extends 'base.html' %}
+{% extends 'base_auth.html' %}
 
 {% block title %}Select Citizenship{% endblock %}
 
 {% block content %}
-<h2>Are you a South African Citizan?</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Next</button>
-</form>
+    <div class="card shadow-lg o-hidden border-0 my-5">
+        <div class="card-body p-0">
+            <div class="p-5">
+                <div class="text-center">
+                    <h4 class="text-dark mb-4">Are you a South African Citizen?<br></h4>
+                </div>
+                <form class="user" method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button class="btn btn-primary btn-block text-white border rounded-0 btn-user"
+                            type="submit">Next<br></button>
+                </form>
+            </div>
+        </div>
+    </div>
 {% endblock %}

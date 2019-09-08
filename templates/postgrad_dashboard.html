@@ -5,13 +5,64 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Postgrad Dashboard</h1>
-    <h2>{{ fname }} {{ lname }} ({{ user.postgrad_profile.student_number }})</h2>
-    <h3>Applications</h3>
-    {% for app in applications %}
-        <p>Application for {{ app }} | {{ app.status}} | <a href="{% url 'postgrad_view_application' app.id %}">View</a></p>
-    {% endfor %}
-    <p><a href="{% url 'postgrad_new_application_part1' %}">New Application</a> |
-        <a href="{% url 'postgrad_edit_profile' %}">Edit details</a></p>
-    <p><a href="{% url 'logout' %}">Logout</a></p>
+    <h3 class="text-dark mb-4">Dashboard</h3>
+    <div class="card shadow mb-3">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-4 col-xl-2">First Name</dt>
+                <dd class="col-8 col-xl-10">{{ fname }}</dd>
+                <dt class="col-4 col-xl-2">Last Name</dt>
+                <dd class="col-8  col-xl-10">{{ lname }}</dd>
+                <dt class="col-4 col-xl-2">Student Number</dt>
+                <dd class="col-8 col-xl-10">{{ user.postgrad_profile.student_number }}</dd>
+                <dt class="col-4 col-xl-2"></dt>
+                <dd class="col-8 col-xl-10"><a class="btn btn-sm btn-outline-primary"
+                                               href="{% url 'postgrad_new_application_part1' %}">New Application</a>
+                </dd>
+            </dl>
+        </div>
+    </div>
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 text-nowrap">
+                    <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable">
+                        <label>Show&nbsp;<select class="form-control form-control-sm custom-select custom-select-sm">
+                            <option value="10" selected="">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>&nbsp;</label></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-md-right dataTables_filter" id="dataTable_filter"><label><input type="search"
+                                                                                                     class="form-control form-control-sm"
+                                                                                                     aria-controls="dataTable"
+                                                                                                     placeholder="Search"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                <table class="table dataTable my-0" id="dataTable">
+                    <thead>
+                    <tr>
+                        <th>DEGREE</th>
+                        <th>STATUS</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for app in applications %}
+                        <tr>
+                            <td>{{ app }}</td>
+                            {
+                            <td>{{ app.status }}</td>
+                            <td><a href="{% url 'postgrad_view_application' app.id %}"><i class="fas fa-link-alt"></i>
+                                VIEW</a></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 {% endblock %}
