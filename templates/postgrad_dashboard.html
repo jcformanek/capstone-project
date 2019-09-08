@@ -48,13 +48,13 @@
                     <tr>
                         <th>DEGREE</th>
                         <th>STATUS</th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for app in applications %}
                         <tr>
                             <td>{{ app }}</td>
-                            {
                             <td>{{ app.status }}</td>
                             <td><a href="{% url 'postgrad_view_application' app.id %}"><i class="fas fa-link-alt"></i>
                                 VIEW</a></td>
