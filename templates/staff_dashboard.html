@@ -5,15 +5,74 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Staff Dashboard</h1>
-    <h2>{{ fname }} {{ lname }} ({{ user.staff_profile.staff_number }})</h2>
-    <h3>All Applications</h3>
-    <p><a href="{% url 'staff_select_uct_degree_filter' %}">Filter by Degree</a> |
-        <a href="{% url 'staff_filter_by_accepted' %}">Filter by accepted</a> |
-        <a href="{% url 'staff_filter_by_rejected' %}">Filter by rejected</a>
-    </p>
-    {% for app in applications %}
-        <p>Application for {{ app }} | {{ app.postgrad_profile.student_number }}| {{ app.status}} | <a href="{% url 'staff_view_application' app.id %}">View</a></p>
-    {% endfor %}
-    <p><a href="{% url 'logout' %}">Logout</a></p>
+    <h3 class="text-dark mb-4">Staff Dashboard</h3>
+    <div class="card shadow mb-3">
+        <div class="card-header py-3">
+            <p class="text-primary m-0 font-weight-bold">>All Applications</p>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-4 col-xl-2">First Name</dt>
+                <dd class="col-8 col-xl-10">{{ fname }}</dd>
+                <dt class="col-4 col-xl-2">Last Name</dt>
+                <dd class="col-8  col-xl-10">{{ lname }}</dd>
+                <dt class="col-4 col-xl-2">Staff Number</dt>
+                <dd class="col-8 col-xl-10">{{ user.staff_profile.staff_number }}</dd>
+                <dt class="col-4 col-xl-2"></dt>
+                <dd class="col-8 col-xl-10">
+                    <a class="btn btn-sm btn-outline-primary"
+                       href="{% url 'staff_select_uct_degree_filter' %}">Filter by Degree</a>
+                    <a class="btn btn-sm btn-outline-primary"
+                       href="{% url 'staff_filter_by_accepted' %}">Filter by accepted</a>
+                    <a class="btn btn-sm btn-outline-primary"
+                       href="{% url 'staff_filter_by_rejected' %}">Filter by rejected</a>
+                </dd>
+            </dl>
+        </div>
+    </div>
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 text-nowrap">
+                    <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable">
+                        <label>Show&nbsp;<select class="form-control form-control-sm custom-select custom-select-sm">
+                            <option value="10" selected="">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>&nbsp;</label></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-md-right dataTables_filter" id="dataTable_filter"><label><input type="search"
+                                                                                                     class="form-control form-control-sm"
+                                                                                                     aria-controls="dataTable"
+                                                                                                     placeholder="Search"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                <table class="table dataTable my-0" id="dataTable">
+                    <thead>
+                    <tr>
+                        <th>DEGREE</th>
+                        <th>STUDENT NUMBER</th>
+                        <th>STATUS</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for app in applications %}
+                        <tr>
+                            <td>{{ app }}</td>
+                            <td>{{ app.postgrad_profile.student_number }}</td>
+                            <td>{{ app.status }}</td>
+                            <td><a href="{% url 'staff_view_application' app.id %}"><i class="fas fa-link"></i>
+                                VIEW</a></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 {% endblock %}
