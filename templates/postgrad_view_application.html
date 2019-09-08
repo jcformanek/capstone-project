@@ -8,6 +8,7 @@
     <p><a href="{% url 'postgrad_remove_application' application.id %}">Withdraw Application</a></p>
     <p>Application ID: {{ application.id}}</p>
     <p>Application status: {{ application.status }}</p>
+    <p>Application evaluator: {{ application.evaluator }}</p>
     <p>Reason: {{ application.reason }}</p>
     {%  if not application.locked %}
     <p>Degree: {{ application.degree }} | <a href="{% url 'postgrad_update_application' application.id %}">Edit</a></p>

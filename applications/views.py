@@ -272,6 +272,7 @@ def staff_accept_application_view(request, id):
     application_id = id
     application = Application.objects.get(id=application_id)
     application.accept()
+    application.add_evaluator(request.user.staff_profile)
     application.save()
     return HttpResponseRedirect(reverse('staff_add_reason', args=[id]))
 
@@ -296,6 +297,7 @@ def staff_reject_application_view(request, id):
     application_id = id
     application = Application.objects.get(id=application_id)
     application.reject()
+    application.add_evaluator(request.user.staff_profile)
     application.save()
     return HttpResponseRedirect(reverse('staff_add_reason', args=[id]))
 

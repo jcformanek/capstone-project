@@ -17,6 +17,7 @@
             <a href="{% url 'staff_reject_application' application.id%}">Reject</a>{% endif %}
     </p>
     <p>Reason: "{{ application.reason}}"</p>
+    <p>Application evaluator: {{ application.evaluator }}</p>
     <p>Degree: {{ application.degree }}</p>
     <p>PDF: {% if application.pdf %}<a href="{{ application.pdf.url }}">view</a>{% else %}None{% endif %}</p>
     <br>

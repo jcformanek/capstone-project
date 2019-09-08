@@ -46,6 +46,8 @@ class StaffProfile(Profile):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='staff_profile')
     staff_number = models.CharField(max_length=9, unique=True)
 
+    def __str__(self):
+        return self.first_name + " " + self.last_name + " (" + self.staff_number + ")"
 
 class UCTDegree(models.Model):
     name = models.CharField(max_length=100)
@@ -65,6 +67,7 @@ class Application(models.Model):
     status = models.CharField(max_length=10, default="Pending")
     reason = models.CharField(max_length=500, blank=True)
     locked = models.BooleanField(default=False)
+    evaluator = models.ForeignKey(StaffProfile, blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.degree.name
@@ -102,4 +105,7 @@ class Application(models.Model):
 
     def unlock(self):
         self.locked = False
+
+    def add_evaluator(self, evaluator):
+        self.evaluator = evaluator
 
