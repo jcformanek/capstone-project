@@ -207,7 +207,7 @@ def postgrad_new_application_part2(request, degree_id, country):
             application = Application(degree=degree, postgrad_profile=request.user.postgrad_profile)
             application.qualification = form.save()
             application.save()
-            check_qualifications(application)
+            application.check_qualifications()
             return HttpResponseRedirect(reverse('postgrad_update_application', args=[application.id]))
     else:
         form = QualificationForm(country=country)
@@ -222,7 +222,7 @@ def postgrad_update_application(request, app_id):
         form = ApplicationForm(request.POST, request.FILES, instance=application)
         if form.is_valid():
             app = form.save()
-            check_qualifications(app)
+            app.check_qualifications()
             return HttpResponseRedirect(reverse('postgrad_view_application', args=[app_id]))
     else:
         form = ApplicationForm(instance=application)
@@ -240,7 +240,7 @@ def postgrad_update_qualification(request, app_id, country):
             qualification = form.save()
             application.qualification = qualification
             application.save()
-            check_qualifications(application)
+            application.check_qualifications()
             return HttpResponseRedirect(reverse('postgrad_view_application', args=[app_id]))
     else:
         form = QualificationForm(instance=qualification, country=country)
@@ -457,15 +457,7 @@ def staff_unlock(request, id):
 def send_email(subject, body, recip):
     send_mail(subject, body, "capstoneproject1010@gmail.com",[recip], False)
 
-def check_qualifications(application):
-    if application.qualification not in application.degree.accepted_qualifications.all():
-        application.reject()
-        application.reason = "Your previous degree does not meet our minimum " \
-                             "requirements for the degree you are applying for."
-    else:
-        application.pending()
-        application.reason = ""
-        application.save()
+
 
 
 

@@ -94,7 +94,7 @@ class Application(models.Model):
         self.update_status()
 
     def pending(self):
-        self.is_rejected, self.is_accepted = False
+        self.is_rejected, self.is_accepted = False, False
         self.update_status()
 
     def add_reason(self, reason):
@@ -108,4 +108,15 @@ class Application(models.Model):
 
     def add_evaluator(self, evaluator):
         self.evaluator = evaluator
+
+    def check_qualifications(self):
+        if self.qualification.degree not in self.degree.accepted_qualifications.all():
+            self.reject()
+            self.reason = "Your previous degree does not meet our minimum " \
+                                 "requirements for the degree you are applying for."
+            self.save()
+        else:
+            self.pending()
+            self.reason = ""
+            self.save()
 
