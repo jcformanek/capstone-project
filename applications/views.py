@@ -183,12 +183,6 @@ def postgrad_edit_select_uct_degree_view(request, app_id):
     return render(request, "postgrad_select_uct_degree.html", {"form": form})
 
 
-class ApplicationUpdate(LoginRequiredMixin, UpdateView):
-    model = Application
-    fields = ['degree', 'pdf']
-    success_url = reverse_lazy('postgrad_applications_dashboard')
-
-
 @login_required
 @user_passes_test(postgrad_check)
 def postgrad_new_application_part1(request):
@@ -213,6 +207,7 @@ def postgrad_new_application_part2(request, degree_id, country):
             application = Application(degree=degree, postgrad_profile=request.user.postgrad_profile)
             application.qualification = form.save()
             application.save()
+            check_qualifications(application)
             return HttpResponseRedirect(reverse('postgrad_update_application', args=[application.id]))
     else:
         form = QualificationForm(country=country)
@@ -226,7 +221,8 @@ def postgrad_update_application(request, app_id):
     if request.method == "POST":
         form = ApplicationForm(request.POST, request.FILES, instance=application)
         if form.is_valid():
-            form.save()
+            app = form.save()
+            check_qualifications(app)
             return HttpResponseRedirect(reverse('postgrad_view_application', args=[app_id]))
     else:
         form = ApplicationForm(instance=application)
@@ -244,6 +240,7 @@ def postgrad_update_qualification(request, app_id, country):
             qualification = form.save()
             application.qualification = qualification
             application.save()
+            check_qualifications(application)
             return HttpResponseRedirect(reverse('postgrad_view_application', args=[app_id]))
     else:
         form = QualificationForm(instance=qualification, country=country)
@@ -337,6 +334,8 @@ def staff_reject_application_view(request, id):
     return HttpResponseRedirect(reverse('staff_add_reason', args=[id]))
 
 
+@login_required
+@user_passes_test(staff_check)
 def staff_select_uct_degree_filter_view(request):
     if request.method == "POST":
         form = SelectUCTDegree(request.POST)
@@ -348,22 +347,30 @@ def staff_select_uct_degree_filter_view(request):
     return render(request, "staff_select_degree.html", {"form": form})
 
 
+@login_required
+@user_passes_test(staff_check)
 def staff_filter_by_degree_view(request, degree_id):
     degree = UCTDegree.objects.get(id=degree_id)
     applications = Application.objects.filter(degree=degree)
     return render(request, "staff_filter_by_degree.html", {"applications": applications, "degree": degree})
 
 
+@login_required
+@user_passes_test(staff_check)
 def staff_filter_by_accepted_view(request):
     applications = Application.objects.filter(is_accepted=True)
     return render(request, "staff_filter_by_accepted.html", {"applications": applications})
 
 
+@login_required
+@user_passes_test(staff_check)
 def staff_filter_by_rejected_view(request):
     applications = Application.objects.filter(is_rejected=True)
     return render(request, "staff_filter_by_rejected.html", {"applications": applications})
 
 
+@login_required
+@user_passes_test(staff_check)
 def staff_application_as_pdf(request, id):
     application = Application.objects.get(id=id)
     buffer = io.BytesIO()
@@ -387,6 +394,8 @@ def staff_application_as_pdf(request, id):
     return FileResponse(buffer, as_attachment=True, filename='application.pdf')
 
 
+@login_required
+@user_passes_test(staff_check)
 def staff_applications_filtered_by_degree_as_csv(request, id):
     degree = UCTDegree.objects.get(id=id)
     applications = Application.objects.filter(degree=degree)
@@ -399,6 +408,8 @@ def staff_applications_filtered_by_degree_as_csv(request, id):
     return response
 
 
+@login_required
+@user_passes_test(staff_check)
 def staff_filtered_by_accepted_as_csv(request):
     applications = Application.objects.filter(is_accepted=True)
     response = HttpResponse(content_type='text/csv')
@@ -410,6 +421,8 @@ def staff_filtered_by_accepted_as_csv(request):
     return response
 
 
+@login_required
+@user_passes_test(staff_check)
 def staff_filtered_by_rejected_as_csv(request):
     applications = Application.objects.filter(is_accepted=False)
     response = HttpResponse(content_type='text/csv')
@@ -421,6 +434,8 @@ def staff_filtered_by_rejected_as_csv(request):
     return response
 
 
+@login_required
+@user_passes_test(staff_check)
 def staff_lock(request, id):
     application_id = id
     application = Application.objects.get(id=application_id)
@@ -429,6 +444,8 @@ def staff_lock(request, id):
     return HttpResponseRedirect(reverse('staff_view_application', args=[id]))
 
 
+@login_required
+@user_passes_test(staff_check)
 def staff_unlock(request, id):
     application_id = id
     application = Application.objects.get(id=application_id)
@@ -439,6 +456,17 @@ def staff_unlock(request, id):
 
 def send_email(subject, body, recip):
     send_mail(subject, body, "capstoneproject1010@gmail.com",[recip], False)
+
+def check_qualifications(application):
+    if application.qualification not in application.degree.accepted_qualifications.all():
+        application.reject()
+        application.reason = "Your previous degree does not meet our minimum " \
+                             "requirements for the degree you are applying for."
+    else:
+        application.pending()
+        application.reason = ""
+        application.save()
+
 
 
 
