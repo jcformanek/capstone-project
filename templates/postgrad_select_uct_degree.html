@@ -3,10 +3,18 @@
 {% block title %}Select UCT Degree{% endblock %}
 
 {% block content %}
-<h2>Which degree would you like to apply for?</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Start Application</button>
-</form>
+    <h3 class="text-dark mb-4">Application</h3>
+    <div class="card shadow mb-3">
+        <div class="card-header py-3">
+            <p class="text-primary m-0 font-weight-bold">Which degree would you like to apply for?</p>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button class="btn btn-primary text-white border rounded-0 btn-user" type="submit">Start Application
+                </button>
+            </form>
+        </div>
+    </div>
 {% endblock %}

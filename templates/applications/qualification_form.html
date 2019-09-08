@@ -3,10 +3,14 @@
 {% block title %}Qualification Form{% endblock %}
 
 {% block content %}
-<h2>Qualification</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Update</button>
-</form>
+    <h3 class="text-dark mb-4">Qualification</h3>
+    <div class="card shadow mb-3">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button class="btn btn-primary text-white border rounded-0 btn-user" type="submit">Update</button>
+            </form>
+        </div>
+    </div>
 {% endblock %}

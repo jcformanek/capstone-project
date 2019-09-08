@@ -3,10 +3,17 @@
 {% block title %}Select Country{% endblock %}
 
 {% block content %}
-<h2>In which country did you complete your last degree?</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Next</button>
-</form>
+    <h3 class="text-dark mb-4">Application</h3>
+    <div class="card shadow mb-3">
+        <div class="card-header py-3">
+            <p class="text-primary m-0 font-weight-bold">In which country did you complete your last degree?</p>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button class="btn btn-primary btn-sm" type="submit">Next <i class="fa fa-arrow-circle-right"></i></button>
+            </form>
+        </div>
+    </div>
 {% endblock %}
