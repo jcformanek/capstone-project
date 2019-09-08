@@ -3,15 +3,35 @@
 {% block title %}New Application{% endblock %}
 
 {% block content %}
-<h1>New Application</h1>
-<form method="post">
-  {% csrf_token %}
-    <h2>What degree are you applying for?</h2>
-  {{ form.degree }}
-    <h2>What country did you complete your last degree in?</h2>
-    {{ form.country }}
-    <br>
-    <br>
-  <button type="submit">Next</button>
-</form>
+    <h3 class="text-dark mb-4">New Application</h3>
+    <div class="row">
+        <div class="col">
+            <form>
+                {% csrf_token %}
+
+                <div class="card shadow mb-3">
+                    <div class="card-header py-3">
+                        <p class="text-primary m-0 font-weight-bold">What degree are you applying for?</p>
+                    </div>
+                    <div class="card-body">
+                        {{ form.degree }}
+                    </div>
+                </div>
+
+                <div class="card shadow mb-3">
+                    <div class="card-header py-3">
+                        <p class="text-primary m-0 font-weight-bold">What country did you complete your last degree
+                            in?</p>
+                    </div>
+                    <div class="card-body">
+                        {{ form.country }}
+                    </div>
+                </div>
+
+                <div class="p-3 bg-white border-top">
+                    <button class="btn btn-primary btn-sm" type="submit">Next <i class="fa fa-arrow-circle-right"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
 {% endblock %}
