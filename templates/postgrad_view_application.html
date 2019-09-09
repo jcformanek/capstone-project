@@ -54,7 +54,7 @@
                         <a href="{% url 'postgrad_select_country' application.id %}"><i class="fa fa-edit"></i>
                             Edit</a>{% endif %}</dd>
                 <dt class="col-4 col-xl-2">Minimum years of previous degree</dt>
-                <dd class="col-8 col-xl-10">{{ application.degree }} {% if not application.locked %}
+                <dd class="col-8 col-xl-10">{{ application.qualification.min_years }} {% if not application.locked %}
                     <a href="{% url 'postgrad_update_qualification' application.id application.qualification.degree.country %}"><i
                             class="fa fa-edit"></i>
                         Edit</a>{% endif %}</dd>
