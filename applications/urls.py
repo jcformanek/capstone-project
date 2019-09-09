@@ -33,5 +33,6 @@ urlpatterns = [
     path('staff/application/unlock/<int:id>/', staff_unlock, name='staff_unlock'),
     path('staff/applications/as_csv/<int:id>/', staff_applications_filtered_by_degree_as_csv, name='staff_applications_filtered_by_degree_as_csv'),
     path('staff/applications/as_csv/accepted/', staff_filtered_by_accepted_as_csv, name='staff_filtered_by_accepted_as_csv'),
-    path('staff/applications/as_csv/rejected/', staff_filtered_by_rejected_as_csv, name='staff_filtered_by_rejected_as_csv')
+    path('staff/applications/as_csv/rejected/', staff_filtered_by_rejected_as_csv, name='staff_filtered_by_rejected_as_csv'),
+    path('staff/applications/upload/', upload_file, name='staff_upload_applications')
 ]

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload Applications{% endblock %}
+
+{% block content %}
+    <h3 class="text-dark mb-4">Upload Applications</h3>
+    <div class="card shadow mb-3">
+        <div class="card-header py-3">
+            <p class="text-primary m-0 font-weight-bold">Upload a csv with applications.</p>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button class="btn btn-primary btn-sm" type="submit">Upload <i class="fa fa-arrow-circle-right"></i></button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

@@ -89,3 +89,7 @@ class CreateRSAPostgradProfileForm(ModelForm):
         fields = ['student_number', 'title', 'first_name', 'last_name', 'race', 'current_country','current_city']
 
 
+class UploadFileForm(forms.Form):
+    file = forms.FileField()
+
+

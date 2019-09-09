@@ -29,7 +29,7 @@ def new_postgrad_check(user):
     return not (user.is_staff and user.is_postgrad)
 
 
-class RegisterView( CreateView):
+class RegisterView(CreateView):
     form_class = CustomUserCreationForm
     success_url = reverse_lazy('postgrad_select_citizenship')
     template_name = 'register.html'
@@ -64,7 +64,7 @@ def create_profile_view(request, inter):
             profile.save()
             profile.user.save()
             send_email("You registred for the CS application portal!",
-                       "Hello, you used this email to sign up on the CS website! Thanks for signing up "+
+                       "Hello, you used this email to sign up on the CS website! Thanks for signing up " +
                        profile.first_name + " " + profile.last_name, profile.email)
             return HttpResponseRedirect(reverse('postgrad_dashboard'))
     else:
@@ -81,7 +81,8 @@ def select_country_view(request, app_id):
     if request.method == 'POST':
         form = QualificationCountryForm(request.POST)
         if form.is_valid():
-            return HttpResponseRedirect(reverse('postgrad_update_qualification', args=[app_id, form.cleaned_data['country']]))
+            return HttpResponseRedirect(
+                reverse('postgrad_update_qualification', args=[app_id, form.cleaned_data['country']]))
     else:
         form = QualificationCountryForm()
     return render(request, "select_country.html", {"form": form})
@@ -94,16 +95,19 @@ def edit_qualification_view(request, app_id, country):
     if request.method == 'POST':
         form = QualificationForm(request.POST)
         if form.is_valid():
-            qualification = Qualification.objects.get_or_create(degree=form.cleaned_data["external_degree"], university=form.cleaned_data["university"],
-                                          min_years=form.cleaned_data["min_years"], thesis=form.cleaned_data["thesis"])[0]
+            qualification = Qualification.objects.get_or_create(degree=form.cleaned_data["external_degree"],
+                                                                university=form.cleaned_data["university"],
+                                                                min_years=form.cleaned_data["min_years"],
+                                                                thesis=form.cleaned_data["thesis"])[0]
             qualification.save()
             application.qualification = qualification
             application.save()
             return HttpResponseRedirect(reverse('postgrad_upload_pdf', args=[app_id]))
     else:
         if application.qualification:
-            form = QualificationForm({"degree": application.qualification.degree, "university": application.qualification.university,
-                                      "min_years": application.qualification.min_years, "thesis": application.qualification.thesis})
+            form = QualificationForm(
+                {"degree": application.qualification.degree, "university": application.qualification.university,
+                 "min_years": application.qualification.min_years, "thesis": application.qualification.thesis})
         else:
             form = QualificationForm()
         form.fields['external_degree'] = forms.ModelChoiceField(ExternalDegree.objects.filter(country=country))
@@ -125,7 +129,8 @@ def new_application_view(request):
         if form.is_valid():
             application = Application(postgrad_profile=request.user.postgrad_profile,
                                       degree=form.cleaned_data['degree'], pdf=request.FILES['pdf'])
-            if request.user.postgrad_profile.qualification not in form.cleaned_data['degree'].accepted_qualifications.all():
+            if request.user.postgrad_profile.qualification not in form.cleaned_data[
+                'degree'].accepted_qualifications.all():
                 application.reject()
                 application.update_reason("You did not meet the minimum qualification requirements.")
             application.save()
@@ -378,11 +383,13 @@ def staff_application_as_pdf(request, id):
     flowables = []
     sample_style_sheet = getSampleStyleSheet()
     paragraph_1 = Paragraph("Application", sample_style_sheet['Heading1'])
-    paragraph_2 = Paragraph("Student number: "+application.postgrad_profile.student_number,sample_style_sheet['BodyText'])
-    paragraph_3 = Paragraph("Applying for: "+application.degree.name, sample_style_sheet['BodyText'])
-    paragraph_4 = Paragraph("Previous Degree: "+str(application.qualification.degree), sample_style_sheet['BodyText'])
-    paragraph_5 = Paragraph("Minimum years of previous degree: "+str(application.qualification.min_years), sample_style_sheet['BodyText'])
-    paragraph_6 = Paragraph("Thesis complete: "+str(application.qualification.thesis), sample_style_sheet['BodyText'] )
+    paragraph_2 = Paragraph("Student number: " + application.postgrad_profile.student_number,
+                            sample_style_sheet['BodyText'])
+    paragraph_3 = Paragraph("Applying for: " + application.degree.name, sample_style_sheet['BodyText'])
+    paragraph_4 = Paragraph("Previous Degree: " + str(application.qualification.degree), sample_style_sheet['BodyText'])
+    paragraph_5 = Paragraph("Minimum years of previous degree: " + str(application.qualification.min_years),
+                            sample_style_sheet['BodyText'])
+    paragraph_6 = Paragraph("Thesis complete: " + str(application.qualification.thesis), sample_style_sheet['BodyText'])
     flowables.append(paragraph_1)
     flowables.append(paragraph_2)
     flowables.append(paragraph_3)
@@ -454,11 +461,28 @@ def staff_unlock(request, id):
     return HttpResponseRedirect(reverse('staff_view_application', args=[id]))
 
 
+@login_required
+@user_passes_test(staff_check)
+def upload_file(request):
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            handle_uploaded_file(request.FILES['file'])
+            return HttpResponseRedirect(reverse('staff_dashboard'))
+    else:
+        form = UploadFileForm()
+    return render(request, 'upload.html', {'form': form})
+
+
 def send_email(subject, body, recip):
-    send_mail(subject, body, "capstoneproject1010@gmail.com",[recip], True)
+    send_mail(subject, body, "capstoneproject1010@gmail.com", [recip], True)
 
 
-
-
-
-
+def handle_uploaded_file(file):
+    file_data = file.read().decode("utf-8")
+    lines = file_data.split("\n")
+    for line in lines:
+        data = line.strip().split(',')
+        send_email(data[1] + ": Please register for the CS application portal", "You have applied centrally at UCT for "
+                   + data[0] + ",but should still complete your application on the CS portal. Follow this link to creat"
+                               "e an account: http://ec2-18-222-140-131.us-east-2.compute.amazonaws.com:8000/", data[2])
