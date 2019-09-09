@@ -59,7 +59,7 @@
                             class="fa fa-edit"></i>
                         Edit</a>{% endif %}</dd>
                 <dt class="col-4 col-xl-2">Did you complete a thesis in previous degree</dt>
-                <dd class="col-8 col-xl-10">{{ application.qualification.thesis }} {% if not application.locked %}
+                <dd class="col-8 col-xl-10">{% if application.qualification.thesis %}Yes{% else %}No{% endif %} {% if not application.locked %}
                     <a href="{% url 'postgrad_update_qualification' application.id application.qualification.degree.country %}"><i
                             class="fa fa-edit"></i>
                         Edit</a>{% endif %}</dd>
