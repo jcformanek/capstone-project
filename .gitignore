@@ -103,4 +103,4 @@ venv.bak/
 # mypy
 .mypy_cache/
 /media/
-/applications/migrations/
+/applications/migrations/0*.py
