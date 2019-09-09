@@ -6,7 +6,7 @@ from applications.models import *
 
 EXTERNAL_DEGREE_TYPES = ['Licence', 'Magister', 'Bacharel', 'Licenciado', 'Doutorado', 'Bachelor degree', 'Bachelor degree (Honours)',
                          'Master\'s degree']
-countries = ['Algeria', 'Angola', 'Australia']
+countries = ['Algeria', 'Angola', 'Australia',"Argentina",'Austria','Botswana','Brazil','Canada']
 
 COUNTRIES = []
 for c in countries:

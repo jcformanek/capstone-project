@@ -315,8 +315,8 @@ def staff_add_reason(request, id):
         if form.is_valid():
             application.add_reason(form.cleaned_data["reason"])
             application.save()
-            send_email("Application status change!", "You application status was changed to "+
-                       application.status+ "! Reason: "+application.reason, application.postgrad_profile.email)
+            send_email("Application status change!", "Your application status was changed to " +
+                       application.status + "! Reason: " + application.reason, application.postgrad_profile.email)
             return HttpResponseRedirect(reverse('staff_view_application', args=[id]))
     else:
         form = ReasonForm()
@@ -455,7 +455,7 @@ def staff_unlock(request, id):
 
 
 def send_email(subject, body, recip):
-    send_mail(subject, body, "capstoneproject1010@gmail.com",[recip], False)
+    send_mail(subject, body, "capstoneproject1010@gmail.com",[recip], True)
 
 
 

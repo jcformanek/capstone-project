@@ -6,3 +6,15 @@ Angola,Doutorado
 Australia,Bachelor degree
 Australia,Bachelor degree (Honours)
 Australia,Master's degree
+Argentina,Grado de Licenciado
+Argentina,Titulo de Maestria
+Austria,Fachhochschuldiplom
+Austria,Bachelor degree
+Austria,Master's Degree
+Botswana,Bachelor degree
+Botswana,Master's degree
+Brazil,Titulo de Bacharel
+Brazil,Titulo de Mestre
+Canada,Bachelor degree
+Canada,Bachelor degree (Honours)
+Canada,Master's degree

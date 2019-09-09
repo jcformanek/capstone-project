@@ -65,7 +65,7 @@
                 <dt class="col-4 col-xl-2">Country of previous degree</dt>
                 <dd class="col-8 col-xl-10">{{ application.qualification.degree.country }}</dd>
                 <dt class="col-4 col-xl-2">Minimum years of previous degree</dt>
-                <dd class="col-8 col-xl-10">{{ application.degree }}</dd>
+                <dd class="col-8 col-xl-10">{{ application.qualification.min_years }}</dd>
                 <dt class="col-4 col-xl-2">Did you complete a thesis in previous degree</dt>
                 <dd class="col-8 col-xl-10">{% if application.qualification.thesis %}Yes{% else %}No{% endif %}</dd>
             </dl>
