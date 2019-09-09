@@ -5,10 +5,46 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Applications</h1>
-    <h2>Filtered by Accepted:</h2>
-    {% for app in applications %}
-        <p>Application: {{app.degree}}, {{ app.postgrad_profile.student_number }}, {{ app.postgrad_profile.email }} | {{ app.status}} | <a href="{% url 'staff_view_application' app.id %}">View</a></p>
-    {% endfor %}
-    <p><a href="{% url 'staff_filtered_by_accepted_as_csv' %}">Download csv</a> | <a href="{% url 'staff_dashboard' %}">Back</a></p>
+    <h3 class="text-dark mb-4">Applications</h3>
+    <div class="card shadow mb-3">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-4 col-xl-2">Filtered by <strong>accepted</strong></dt>
+                <dd class="col-8 col-xl-10">{{ degree.name }}</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="card shadow mb-3">
+        <div class="card-body">
+            <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                <table class="table dataTable my-0" id="dataTable">
+                    <thead>
+                    <tr>
+                        <th>STUDENT NUMBER</th>
+                        <th>EMAIL</th>
+                        <th>STATUS</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for app in applications %}
+                        <tr>
+                            <td class="text-uppercase">{{ app.postgrad_profile.student_number }}</td>
+                            <td>{{ app.postgrad_profile.email }}</td>
+                            <td>{{ app.status }}</td>
+                            <td><a href="{% url 'staff_view_application' app.id %}"><i class="fas fa-link"></i>
+                                VIEW</a></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="p-3 bg-white border-top">
+        <a href="{% url 'staff_filtered_by_accepted_as_csv' %}"><i class="fa fa-download"></i> Download csv</a> | <a
+            href="{% url 'staff_dashboard' %}"><i class="fa fa-arrow-circle-left"></i> Back</a>
+    </div>
 {% endblock %}

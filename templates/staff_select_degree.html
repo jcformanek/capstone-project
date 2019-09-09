@@ -3,10 +3,19 @@
 {% block title %}Select Degree{% endblock %}
 
 {% block content %}
-<h2>Which degree would you like to filter by?</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Filter</button>
-</form>
+    <form method="post">
+        {% csrf_token %}
+        <div class="card shadow mb-3">
+            <div class="card-header py-3">
+                <p class="text-primary m-0 font-weight-bold">Which degree would you like to filter by?</p>
+            </div>
+            <div class="card-body">
+                {{ form.as_p }}
+            </div>
+        </div>
+
+        <div class="p-3 bg-white border-top">
+            <button class="btn btn-primary btn-sm" type="submit"><i class="fa fa-filter"></i> Filter</button>
+        </div>
+    </form>
 {% endblock %}

@@ -3,10 +3,16 @@
 {% block title %}Add reason{% endblock %}
 
 {% block content %}
-<h2>Add reason.</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Add</button>
-</form>
+    <div class="card shadow mb-3">
+        <div class="card-header py-3">
+            <p class="text-primary m-0 font-weight-bold">Add Reason</p>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button class="btn btn-primary btn-sm" type="submit"><i class="fa fa-save"></i> Save</button>
+            </form>
+        </div>
+    </div>
 {% endblock %}
