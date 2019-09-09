@@ -3,32 +3,71 @@
 {% block title %}Application Detailed{% endblock %}
 
 {% block content %}
-    <h1>Application Overview</h1>
-    {% if application.locked %}<h3>Application Locked</h3>{%  endif %}
-    <p><a href="{% url 'postgrad_remove_application' application.id %}">Withdraw Application</a></p>
-    <p>Application ID: {{ application.id}}</p>
-    <p>Application status: {{ application.status }}</p>
-    <p>Application evaluator: {{ application.evaluator }}</p>
-    <p>Reason: {{ application.reason }}</p>
-    {%  if not application.locked %}
-    <p>Degree: {{ application.degree }} | <a href="{% url 'postgrad_update_application' application.id %}">Edit</a></p>
-    <p>PDF: {{ application.pdf }} | <a href="{% url 'postgrad_update_application' application.id %}">Edit</a></p>
-    <br>
-    <h2>Your Qualification</h2>
-    <p>Previous degree: {{ application.qualification.degree.type }} | <a href="{% url 'postgrad_update_qualification' application.id application.qualification.degree.country %}">Edit</a></p>
-    <p>Country of previous degree: {{ application.qualification.degree.country }} | <a href="{% url 'postgrad_select_country' application.id %}">Edit</a></p>
-    <p>Minimum years of previous degree: {{ application.qualification.min_years }} | <a href="{% url 'postgrad_update_qualification' application.id application.qualification.degree.country %}">Edit</a></p>
-    <p>Did you complete a thesis in previous degree: {{ application.qualification.thesis }} <a href="{% url 'postgrad_update_qualification' application.id application.qualification.degree.country %}">Edit</a></p>
-    {% else %}
-    <p>Degree: {{ application.degree }}</p>
-    <p>PDF: {{ application.pdf }}</p>
-    <br>
-    <h2>Your Qualification</h2>
-    <p>Previous degree: {{ application.qualification.degree.type }}</p>
-    <p>Country of previous degree: {{ application.qualification.degree.country }}</p>
-    <p>Minimum years of previous degree: {{ application.qualification.min_years }}</p>
-    <p>Did you complete a thesis in previous degree: {{ application.qualification.thesis }}</p>
-    {% endif %}
-    <br>
-    <p><a href="{% url 'postgrad_dashboard' %}">Back</a></p>
+    <h3 class="text-dark mb-4">Application Overview</h3>
+    <div class="card shadow mb-3">
+        {% if application.locked %}
+            <div class="card-header py-3">
+                <p class="text-danger m-0"><i class="fa fa-lock"></i> Application Locked</p>
+            </div>
+        {% endif %}
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-4 col-xl-2">
+                    <a class="btn btn-sm btn-danger"
+                       href="{% url 'postgrad_new_application_part1' %}">Withdraw Application</a>
+                </dt>
+                <dd class="col-8 col-xl-10"></dd>
+                <dt class="col-4 col-xl-2">Application ID</dt>
+                <dd class="col-8 col-xl-10">{{ application.id }}</dd>
+                <dt class="col-4 col-xl-2">Application status</dt>
+                <dd class="col-8  col-xl-10">{{ application.status }}</dd>
+                <dt class="col-4 col-xl-2">Application evaluator</dt>
+                <dd class="col-8 col-xl-10">{{ application.evaluator }}</dd>
+                <dt class="col-4 col-xl-2">Reason</dt>
+                <dd class="col-8 col-xl-10">{{ application.reason }}</dd>
+                <dt class="col-4 col-xl-2">Degree</dt>
+                <dd class="col-8 col-xl-10">{{ application.degree }} {% if not application.locked %}
+                    <a href="{% url 'postgrad_update_application' application.id %}"><i class="fa fa-edit"></i>
+                        Edit</a>{% endif %}</dd>
+                <dt class="col-4 col-xl-2">PDF</dt>
+                <dd class="col-8 col-xl-10">{{ application.pdf }} {% if not application.locked %}
+                    <a href="{% url 'postgrad_update_application' application.id %}"><i class="fa fa-edit"></i>
+                        Edit</a>{% endif %}</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="card shadow mb-3">
+        <div class="card-header py-3">
+            <p class="text-primary m-0 font-weight-bold">Your Qualification</p>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-4 col-xl-2">Previous degree</dt>
+                <dd class="col-8 col-xl-10">{{ application.qualification.degree.type }} {% if not application.locked %}
+                    <a href="{% url 'postgrad_update_qualification' application.id application.qualification.degree.country %}"><i
+                            class="fa fa-edit"></i>
+                        Edit</a>{% endif %}</dd>
+                <dt class="col-4 col-xl-2">Country of previous degree</dt>
+                <dd class="col-8 col-xl-10">{{ application.qualification.degree.country }}
+                    {% if not application.locked %}
+                        <a href="{% url 'postgrad_select_country' application.id %}"><i class="fa fa-edit"></i>
+                            Edit</a>{% endif %}</dd>
+                <dt class="col-4 col-xl-2">Minimum years of previous degree</dt>
+                <dd class="col-8 col-xl-10">{{ application.degree }} {% if not application.locked %}
+                    <a href="{% url 'postgrad_update_qualification' application.id application.qualification.degree.country %}"><i
+                            class="fa fa-edit"></i>
+                        Edit</a>{% endif %}</dd>
+                <dt class="col-4 col-xl-2">Did you complete a thesis in previous degree</dt>
+                <dd class="col-8 col-xl-10">{{ application.qualification.thesis }} {% if not application.locked %}
+                    <a href="{% url 'postgrad_update_qualification' application.id application.qualification.degree.country %}"><i
+                            class="fa fa-edit"></i>
+                        Edit</a>{% endif %}</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="p-3 bg-white border-top">
+        <a href="{% url 'postgrad_dashboard' %}"><i class="fa fa-arrow-circle-left"></i> Back</a>
+    </div>
 {% endblock %}
