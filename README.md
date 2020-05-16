@@ -1,2 +1,2 @@
-# capstone_prototype
-CSC3 Capstone Project Prototype
+# Computer Science Capstone Project
+Third year Computer Science at The University of Cape Town
